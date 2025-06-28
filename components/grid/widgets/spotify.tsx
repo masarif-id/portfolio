@@ -2,6 +2,8 @@
 
 import useSWR from 'swr';
 import Card from '../../ui/card';
+import Anchor from '../../ui/anchor';
+import { FaArrowRight } from 'react-icons/fa6';
 
 interface Spotify {
     isPlaying: boolean;
@@ -30,7 +32,19 @@ export default function Spotify() {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }}
-            className='flex h-full flex-col justify-end gap-3 bg-cover'>
+            className='flex h-full flex-col justify-end gap-3 bg-cover relative group'>
+            
+            {/* Arrow button */}
+            <div className='absolute bottom-3 left-3'>
+                <Anchor
+                    className='cancel-drag'
+                    href='/spotify'
+                    aria-label='View Spotify Details'>
+                    <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
+                    <span className='sr-only'>View Spotify Details</span>
+                </Anchor>
+            </div>
+
             <div className='text-dark-50 px-8'>
                 <h2
                     className='font-pixelify-sans line-clamp-2 text-2xl md:line-clamp-1 lg:line-clamp-2'
