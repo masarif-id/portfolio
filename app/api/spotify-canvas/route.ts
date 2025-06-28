@@ -34,21 +34,19 @@ export async function GET(request: NextRequest) {
                 return NextResponse.json({ 
                     error: 'Canvas not found for the provided track' 
                 }, { status: 404 });
-            }
-            
-            if (response.status === 401) {
+            } else if (response.status === 401) {
                 return NextResponse.json({ 
                     error: 'API authentication failed' 
                 }, { status: 500 });
-            }
-            
-            if (response.status === 500) {
+            } else if (response.status === 500) {
                 return NextResponse.json({ 
                     error: 'External service temporarily unavailable' 
                 }, { status: 503 });
+            } else {
+                return NextResponse.json({ 
+                    error: 'Failed to fetch canvas from external service' 
+                }, { status: 500 });
             }
-            
-            throw new Error(`Failed to fetch canvas: ${response.status}`);
         }
 
         const data = await response.json();
