@@ -3,7 +3,7 @@ import { Layout } from 'react-grid-layout';
 
 interface GridItem {
     i: string;
-    component: React.ComponentType;
+    component: React.ComponentType<any>;
 }
 
 export const gridItems: GridItem[] = [

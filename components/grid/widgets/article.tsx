@@ -5,7 +5,7 @@ import Anchor from '../../ui/anchor';
 import Card from '../../ui/card';
 
 interface ArticleProps {
-    post: {
+    post?: {
         slug: string;
         metadata: {
             title: string;
@@ -16,6 +16,23 @@ interface ArticleProps {
 }
 
 export default function Article({ post }: ArticleProps) {
+    if (!post) {
+        return (
+            <Card className='flex flex-col justify-center gap-6 p-8'>
+                <div className='h-6 bg-gray-300 animate-pulse rounded-md w-3/4' />
+                <div className='space-y-2'>
+                    <div className='h-4 bg-gray-300 animate-pulse rounded-md w-full' />
+                    <div className='h-4 bg-gray-300 animate-pulse rounded-md w-full' />
+                    <div className='h-4 bg-gray-300 animate-pulse rounded-md w-2/3' />
+                </div>
+                <div className='inline-flex flex-col items-center justify-center gap-6 sm:flex-row sm:justify-between'>
+                    <div className='h-10 bg-gray-300 animate-pulse rounded-full w-24' />
+                    <div className='h-4 bg-gray-300 animate-pulse rounded-md w-20' />
+                </div>
+            </Card>
+        );
+    }
+
     return (
         <Card className='flex flex-col justify-center gap-6 p-8'>
             <h2 className='font-pixelify-sans truncate text-2xl' title={post.metadata.title}>
