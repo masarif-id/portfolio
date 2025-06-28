@@ -66,7 +66,7 @@ export default function SpotifyPage() {
                                     <p className='text-gray-600 dark:text-gray-400'>{data?.album}</p>
                                 </div>
                                 
-                                {/* Playing Status - hanya visualizer tanpa text */}
+                                {/* Playing Status */}
                                 <div className='flex items-center gap-3 py-4'>
                                     {data?.isPlaying && (
                                         <div className='inline-flex items-center justify-center gap-1'>
@@ -78,6 +78,9 @@ export default function SpotifyPage() {
                                             <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
                                         </div>
                                     )}
+                                    <p className='text-[#1DB954] font-medium'>
+                                        {data?.isPlaying ? 'Now Playing' : 'Offline'}
+                                    </p>
                                 </div>
 
                                 {/* Spotify Links */}
@@ -196,7 +199,7 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Playing Status - hanya visualizer */}
+                    {/* Playing Status */}
                     <div key="spotify-4">
                         <Card className='flex flex-col items-center justify-center p-6'>
                             <div className='flex items-center gap-3 mb-3'>
@@ -205,12 +208,12 @@ export default function SpotifyPage() {
                                         <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
                                         <div className='w-1 h-4 animate-[playing_0.62s_ease_infinite] rounded-full bg-[#1DB954]' />
                                         <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                        <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                        <div className='w-1 h-4 animate-[playing_0.49s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                        <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
                                     </div>
                                 )}
                             </div>
+                            <p className='text-sm font-medium text-center text-[#1DB954]'>
+                                {data?.isPlaying ? 'Now Playing' : 'Last Played'}
+                            </p>
                         </Card>
                     </div>
 
