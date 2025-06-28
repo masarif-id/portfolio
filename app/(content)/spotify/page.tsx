@@ -186,13 +186,17 @@ export default function SpotifyPage() {
                         <Card className='flex flex-col items-center justify-center p-6'>
                             {data?.artistInfo ? (
                                 <>
-                                    <FaFire size='2rem' className='mb-3 text-orange-500' />
+                                    <div className='w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center mb-3'>
+                                        <FaFire className='text-white' size='1.5rem' />
+                                    </div>
                                     <p className='text-2xl font-bold'>{data.artistInfo.popularity}</p>
                                     <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>Popularity Score</p>
                                 </>
                             ) : (
                                 <>
-                                    <FaSpotify size='2rem' className='mb-3 text-[#1DB954]' />
+                                    <div className='w-12 h-12 rounded-full bg-[#1DB954] flex items-center justify-center mb-3'>
+                                        <FaSpotify className='text-white' size='1.5rem' />
+                                    </div>
                                     <p className='text-sm font-medium text-center'>Listen on Spotify</p>
                                 </>
                             )}
@@ -222,14 +226,16 @@ export default function SpotifyPage() {
                         <Card className='flex flex-col items-center justify-center p-6'>
                             {data?.artistInfo ? (
                                 <>
-                                    <FaUsers size='2rem' className='mb-3 text-blue-500' />
+                                    <div className='w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center mb-3'>
+                                        <FaUsers className='text-white' size='1.5rem' />
+                                    </div>
                                     <p className='text-lg font-bold'>{formatFollowers(data.artistInfo.followers)}</p>
                                     <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>Followers</p>
                                 </>
                             ) : (
                                 <>
-                                    <div className='w-16 h-16 bg-gray-300 dark:bg-dark-700 rounded-full mb-3 flex items-center justify-center'>
-                                        <FaSpotify className='text-gray-600 dark:text-gray-400' size='2rem' />
+                                    <div className='w-12 h-12 bg-gray-300 dark:bg-dark-700 rounded-full mb-3 flex items-center justify-center'>
+                                        <FaSpotify className='text-gray-600 dark:text-gray-400' size='1.5rem' />
                                     </div>
                                     <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>No artist data</p>
                                 </>
