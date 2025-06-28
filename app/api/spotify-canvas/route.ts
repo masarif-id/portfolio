@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        // Using the correct endpoint from documentation: /spotify
-        const url = `${PAXSENIX_BASE_URL}/spotify?id=${trackId}`;
+        // Using the correct endpoint from curl example: /spotify/canvas
+        const url = `${PAXSENIX_BASE_URL}/spotify/canvas?id=${trackId}`;
         console.log('Fetching canvas from:', url);
 
         const response = await fetch(url, {

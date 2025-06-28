@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
         if (trackId) params.append('id', trackId);
         if (trackUrl) params.append('url', trackUrl);
 
-        // Using the correct endpoint from documentation: /lyrics
+        // Using the correct endpoint: /lyrics (this should be correct based on documentation)
         const url = `${PAXSENIX_BASE_URL}/lyrics?${params.toString()}`;
         console.log('Fetching lyrics from:', url);
 
