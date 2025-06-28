@@ -4,7 +4,6 @@ import useSWR from 'swr';
 import Anchor from '@/components/ui/anchor';
 import Container from '@/components/ui/container';
 import Card from '@/components/ui/card';
-import Image from 'next/image';
 import { FaX, FaSpotify } from 'react-icons/fa6';
 
 interface Spotify {
@@ -39,17 +38,11 @@ export default function SpotifyPage() {
                         {/* Album Cover Card */}
                         <Card className='p-8'>
                             <div className='flex flex-col items-center gap-6'>
-                                <div className='relative w-64 h-64 rounded-2xl overflow-hidden shadow-2xl'>
-                                    {data?.albumImageUrl && (
-                                        <Image
-                                            src={data.albumImageUrl}
-                                            alt={`${data.title} album cover`}
-                                            fill
-                                            className='object-cover'
-                                            sizes='256px'
-                                            priority
-                                        />
-                                    )}
+                                <div 
+                                    className='relative w-64 h-64 rounded-2xl overflow-hidden shadow-2xl bg-cover bg-center'
+                                    style={{
+                                        backgroundImage: `url(${data?.albumImageUrl ?? ''})`,
+                                    }}>
                                 </div>
                                 
                                 {/* Playing Status with Green Animation */}
