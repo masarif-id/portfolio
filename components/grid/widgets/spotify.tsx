@@ -79,12 +79,12 @@ function CardFooter({ isPlaying }: Readonly<{ isPlaying?: boolean }>) {
         <div className='border-dark-50 text-dark-400 dark:border-dark-800 dark:bg-dark-900 flex items-center gap-3 border-t bg-white px-8 py-2'>
             {isPlaying && (
                 <div className='inline-flex items-center justify-center gap-1'>
-                    <div className='w-1 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
-                    <div className='w-1 animate-[playing_0.62s_ease_infinite] rounded-full bg-[#1DB954]' />
-                    <div className='w-1 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
-                    <div className='w-1 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
-                    <div className='w-1 animate-[playing_0.49s_ease_infinite] rounded-full bg-[#1DB954]' />
-                    <div className='w-1 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
+                    <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
+                    <div className='w-1 h-4 animate-[playing_0.62s_ease_infinite] rounded-full bg-[#1DB954]' />
+                    <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
+                    <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
+                    <div className='w-1 h-4 animate-[playing_0.49s_ease_infinite] rounded-full bg-[#1DB954]' />
+                    <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
                 </div>
             )}
             <p className='text-sm'>{isPlaying ? 'Now Playing' : 'Offline. Last Played'}</p>
