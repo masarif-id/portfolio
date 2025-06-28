@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         });
 
         if (!response.ok) {
-            console.error(`Paxsenix API error: ${response.status} - ${response.statusText}`);
+            console.error(`Paxsenix API error: ${response.status} - ${response.statusText || 'No status text provided'}`);
             
             if (response.status === 404) {
                 return NextResponse.json({ 
