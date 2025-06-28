@@ -182,41 +182,39 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Enhanced Now Playing Card with Big Visualizer Background */}
+                    {/* Enhanced Now Playing Card with Extended Visualizer at Bottom */}
                     <div key="spotify-4">
-                        <Card className='relative flex flex-col items-center justify-center p-6 overflow-hidden'>
-                            {/* Big Visualizer Background */}
-                            {data?.isPlaying && (
-                                <div className='absolute inset-0 flex items-center justify-center opacity-20'>
-                                    <div className='flex items-end gap-2 scale-[3]'>
-                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.85s_ease_infinite] rounded-full' />
-                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.62s_ease_infinite] rounded-full' />
-                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.26s_ease_infinite] rounded-full' />
-                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.85s_ease_infinite] rounded-full' />
-                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.49s_ease_infinite] rounded-full' />
-                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.26s_ease_infinite] rounded-full' />
-                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.73s_ease_infinite] rounded-full' />
-                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.91s_ease_infinite] rounded-full' />
-                                    </div>
-                                </div>
-                            )}
-                            
-                            {/* Radial gradient overlay for depth */}
-                            <div className='absolute inset-0 bg-gradient-radial from-transparent via-transparent to-white/30 dark:to-dark-900/30' />
-                            
-                            {/* Content */}
-                            <div className='relative z-10 flex flex-col items-center gap-3'>
-                                {data?.isPlaying && (
-                                    <div className='inline-flex items-center justify-center gap-1'>
-                                        <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                        <div className='w-1 h-4 animate-[playing_0.62s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                        <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                    </div>
-                                )}
+                        <Card className='relative flex flex-col justify-between p-6 overflow-hidden'>
+                            {/* Content at top */}
+                            <div className='flex flex-col items-center gap-3 z-10 relative'>
                                 <p className='text-sm font-medium text-center text-[#1DB954]'>
                                     {data?.isPlaying ? 'Now Playing' : 'Last Played'}
                                 </p>
                             </div>
+                            
+                            {/* Extended Visualizer at Bottom */}
+                            {data?.isPlaying && (
+                                <div className='absolute bottom-0 left-0 right-0 flex items-end justify-center gap-1 p-4'>
+                                    <div className='w-1 h-3 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.85s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-4 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.62s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-6 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.26s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-5 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.85s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-3 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.49s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-7 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.26s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-4 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.73s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-5 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.91s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-6 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.67s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-3 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.15s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-8 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.58s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-4 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.94s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-5 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.76s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-6 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.08s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-3 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.82s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-7 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.65s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-4 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.12s_ease_infinite] rounded-full' />
+                                    <div className='w-1 h-5 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.88s_ease_infinite] rounded-full' />
+                                </div>
+                            )}
                         </Card>
                     </div>
 
