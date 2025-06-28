@@ -19,7 +19,8 @@ export async function GET(request: NextRequest) {
         if (trackId) params.append('id', trackId);
         if (trackUrl) params.append('url', trackUrl);
 
-        const url = `${PAXSENIX_BASE_URL}/lyrics/spotify?${params.toString()}`;
+        // Using the correct endpoint from documentation: /lyrics
+        const url = `${PAXSENIX_BASE_URL}/lyrics?${params.toString()}`;
         console.log('Fetching lyrics from:', url);
 
         const response = await fetch(url, {

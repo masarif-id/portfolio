@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const url = `${PAXSENIX_BASE_URL}/spotify/canvas?id=${trackId}`;
+        // Using the correct endpoint from documentation: /spotify
+        const url = `${PAXSENIX_BASE_URL}/spotify?id=${trackId}`;
         console.log('Fetching canvas from:', url);
 
         const response = await fetch(url, {
