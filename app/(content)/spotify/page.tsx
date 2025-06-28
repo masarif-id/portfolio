@@ -187,39 +187,43 @@ export default function SpotifyPage() {
                         <Card className='relative overflow-hidden p-0'>
                             {/* Content overlay */}
                             <div className='absolute inset-0 z-10 flex flex-col justify-center items-center'>
-                                <p className='text-sm font-bold text-center text-white drop-shadow-lg'>
+                                <p className='text-sm font-bold text-center text-black dark:text-white drop-shadow-lg'>
                                     {data?.isPlaying ? 'Now Playing' : 'Last Played'}
                                 </p>
                             </div>
                             
-                            {/* Full Card Visualizer Background */}
+                            {/* Full Card Visualizer Background - Centered */}
                             {data?.isPlaying ? (
-                                <div className='absolute inset-0 flex items-end justify-center gap-1 p-2'>
-                                    {/* Generate bars with wider width */}
-                                    {Array.from({ length: 20 }, (_, i) => (
-                                        <div 
-                                            key={i}
-                                            className={`bg-gradient-to-t from-[#1DB954] to-[#1ed760] rounded-t-md visualizer-bar-${(i % 8) + 1}`}
-                                            style={{
-                                                width: '8px',
-                                                animationDelay: `${i * 0.1}s`
-                                            }}
-                                        />
-                                    ))}
+                                <div className='absolute inset-0 flex items-center justify-center'>
+                                    <div className='flex items-end gap-1 h-full w-full justify-center px-4'>
+                                        {/* Generate bars with wider width */}
+                                        {Array.from({ length: 20 }, (_, i) => (
+                                            <div 
+                                                key={i}
+                                                className={`bg-gradient-to-t from-[#1DB954] to-[#1ed760] rounded-t-md visualizer-bar-${(i % 8) + 1}`}
+                                                style={{
+                                                    width: '8px',
+                                                    animationDelay: `${i * 0.1}s`
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
                             ) : (
-                                <div className='absolute inset-0 flex items-end justify-center gap-1 p-2'>
-                                    {/* Static bars when not playing */}
-                                    {Array.from({ length: 20 }, (_, i) => (
-                                        <div 
-                                            key={i}
-                                            className='bg-gray-300 dark:bg-dark-700 rounded-t-md'
-                                            style={{
-                                                width: '8px',
-                                                height: `${20 + (i % 6) * 10}%`
-                                            }}
-                                        />
-                                    ))}
+                                <div className='absolute inset-0 flex items-center justify-center'>
+                                    <div className='flex items-end gap-1 h-full w-full justify-center px-4'>
+                                        {/* Static bars when not playing */}
+                                        {Array.from({ length: 20 }, (_, i) => (
+                                            <div 
+                                                key={i}
+                                                className='bg-gray-300 dark:bg-dark-700 rounded-t-md'
+                                                style={{
+                                                    width: '8px',
+                                                    height: `${20 + (i % 6) * 10}%`
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </Card>
