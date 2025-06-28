@@ -1,6 +1,7 @@
 'use client';
 
 import useSWR from 'swr';
+import { useRouter } from 'next/navigation';
 import Card from '../../ui/card';
 
 interface Spotify {
@@ -14,14 +15,40 @@ interface Spotify {
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
+// Extract Spotify track ID from URL
+const extractTrackId = (url: string): string | null => {
+    const match = url.match(/track\/([a-zA-Z0-9]+)/);
+    return match ? match[1] : null;
+};
+
 export default function Spotify() {
     const { data, isLoading, error } = useSWR<Spotify>('/api/now-playing', fetcher);
+    const router = useRouter();
+
+    const handleClick = () => {
+        if (data?.songUrl) {
+            const trackId = extractTrackId(data.songUrl);
+            if (trackId) {
+                // Store track info in localStorage for the detail page
+                localStorage.setItem('currentTrackInfo', JSON.stringify({
+                    title: data.title,
+                    artist: data.artist,
+                    album: data.album,
+                    albumImageUrl: data.albumImageUrl,
+                    songUrl: data.songUrl
+                }));
+                
+                router.push(`/spotify/${trackId}`);
+            }
+        }
+    };
 
     if (error) return <ErrorDisplay />;
     if (isLoading) return <Loading />;
 
     return (
         <Card
+            onClick={handleClick}
             style={{
                 backgroundImage: `
                     linear-gradient(to bottom, transparent, rgba(0, 0, 0, 1)),
@@ -30,18 +57,14 @@ export default function Spotify() {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }}
-            className='flex h-full flex-col justify-end gap-3 bg-cover'>
+            className='flex h-full flex-col justify-end gap-3 bg-cover cursor-pointer hover:scale-[1.02] transition-transform duration-200'>
             <div className='text-dark-50 px-8'>
                 <h2
                     className='font-pixelify-sans line-clamp-2 text-2xl md:line-clamp-1 lg:line-clamp-2'
                     title={data?.title}>
-                    <a
-                        href={data?.songUrl ?? '#'}
-                        target='_blank'
-                        rel='nofollow noopener noreferrer'
-                        className='cancel-drag'>
+                    <span className='cancel-drag'>
                         {data?.title}
-                    </a>
+                    </span>
                 </h2>
                 <p className='truncate font-medium' title={data?.artist}>
                     {data?.artist}
