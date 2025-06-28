@@ -5,8 +5,18 @@ import Anchor from '@/components/ui/anchor';
 import Container from '@/components/ui/container';
 import Card from '@/components/ui/card';
 import GridLayout from '@/components/grid/layout';
-import { FaX, FaSpotify, FaArrowRight } from 'react-icons/fa6';
+import { FaX, FaSpotify, FaArrowRight, FaUsers, FaFire } from 'react-icons/fa6';
 import { spotifyLayouts } from '@/config/grid';
+import Image from 'next/image';
+
+interface ArtistInfo {
+    name: string;
+    genres: string[];
+    followers: number;
+    image: string;
+    url: string;
+    popularity: number;
+}
 
 interface Spotify {
     isPlaying: boolean;
@@ -15,9 +25,19 @@ interface Spotify {
     artist: string;
     albumImageUrl: string;
     songUrl: string;
+    artistInfo?: ArtistInfo | null;
 }
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
+const formatFollowers = (count: number): string => {
+    if (count >= 1000000) {
+        return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+        return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toString();
+};
 
 export default function SpotifyPage() {
     const { data, isLoading, error } = useSWR<Spotify>('/api/now-playing', fetcher);
@@ -65,7 +85,36 @@ export default function SpotifyPage() {
                                     </p>
                                 </div>
 
-                                {/* Spotify Link */}
+                                {/* Artist Info */}
+                                {data?.artistInfo && (
+                                    <div className='bg-gray-50 dark:bg-dark-800 rounded-lg p-4 space-y-3'>
+                                        <h3 className='font-pixelify-sans text-lg'>Artist Info</h3>
+                                        <div className='flex items-center gap-3'>
+                                            <FaUsers className='text-gray-600 dark:text-gray-400' />
+                                            <span className='text-sm'>{formatFollowers(data.artistInfo.followers)} followers</span>
+                                        </div>
+                                        <div className='flex items-center gap-3'>
+                                            <FaFire className='text-orange-500' />
+                                            <span className='text-sm'>Popularity: {data.artistInfo.popularity}/100</span>
+                                        </div>
+                                        {data.artistInfo.genres.length > 0 && (
+                                            <div>
+                                                <p className='text-sm font-medium mb-2'>Genres:</p>
+                                                <div className='flex flex-wrap gap-2'>
+                                                    {data.artistInfo.genres.slice(0, 3).map((genre) => (
+                                                        <span 
+                                                            key={genre}
+                                                            className='px-2 py-1 bg-gray-200 dark:bg-dark-700 rounded-full text-xs'>
+                                                            {genre}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Spotify Links */}
                                 <div className='flex flex-wrap items-center gap-3 pt-4'>
                                     <a
                                         href={data?.songUrl ?? '#'}
@@ -73,20 +122,31 @@ export default function SpotifyPage() {
                                         rel='noreferrer nofollow noopener'
                                         className='group inline-flex items-center justify-center gap-3 px-5 py-3 text-sm bg-[#1DB954] text-white rounded-full hover:bg-[#1ed760] transition-all duration-300'>
                                         <FaSpotify />
-                                        Open in Spotify
+                                        Open Track
                                         <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                                     </a>
+                                    {data?.artistInfo && (
+                                        <a
+                                            href={data.artistInfo.url}
+                                            target='_blank'
+                                            rel='noreferrer nofollow noopener'
+                                            className='group inline-flex items-center justify-center gap-3 px-5 py-3 text-sm bg-gray-800 text-white rounded-full hover:bg-gray-700 transition-all duration-300'>
+                                            <FaSpotify />
+                                            View Artist
+                                            <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
+                                        </a>
+                                    )}
                                 </div>
                             </div>
                         </div>
                         <div className='prose dark:prose-invert'>
                             <p>
-                                This shows my current or most recently played track from Spotify. 
+                                This shows my current or most recently played track from Spotify with detailed artist information. 
                                 The data is fetched in real-time from the Spotify API and updates automatically.
                             </p>
                             <p>
-                                You can click the button above to open the track directly in your Spotify app 
-                                and continue listening from where you left off.
+                                You can explore the artist's profile, see their popularity metrics, genres, and follower count 
+                                to discover more about the music I'm listening to.
                             </p>
                         </div>
                     </div>
@@ -107,22 +167,65 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Song Info Card */}
+                    {/* Artist Info Card */}
                     <div key="spotify-2">
                         <Card className='flex flex-col justify-center p-6'>
-                            <div className='space-y-3'>
-                                <h3 className='font-pixelify-sans text-lg line-clamp-2'>{data?.title}</h3>
-                                <p className='font-medium text-gray-800 dark:text-gray-200 line-clamp-1'>{data?.artist}</p>
-                                <p className='text-sm text-gray-600 dark:text-gray-400 line-clamp-1'>{data?.album}</p>
-                            </div>
+                            {data?.artistInfo ? (
+                                <div className='space-y-3'>
+                                    <div className='flex items-center gap-3'>
+                                        {data.artistInfo.image && (
+                                            <div className='relative w-12 h-12 rounded-full overflow-hidden'>
+                                                <Image
+                                                    src={data.artistInfo.image}
+                                                    alt={data.artistInfo.name}
+                                                    fill
+                                                    className='object-cover'
+                                                />
+                                            </div>
+                                        )}
+                                        <div>
+                                            <h3 className='font-pixelify-sans text-lg line-clamp-1'>{data.artistInfo.name}</h3>
+                                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                                {formatFollowers(data.artistInfo.followers)} followers
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {data.artistInfo.genres.length > 0 && (
+                                        <div className='flex flex-wrap gap-1'>
+                                            {data.artistInfo.genres.slice(0, 2).map((genre) => (
+                                                <span 
+                                                    key={genre}
+                                                    className='px-2 py-1 bg-gray-200 dark:bg-dark-700 rounded-full text-xs'>
+                                                    {genre}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className='space-y-3'>
+                                    <h3 className='font-pixelify-sans text-lg line-clamp-2'>{data?.artist}</h3>
+                                    <p className='text-sm text-gray-600 dark:text-gray-400'>Artist information unavailable</p>
+                                </div>
+                            )}
                         </Card>
                     </div>
 
-                    {/* Spotify Action */}
+                    {/* Popularity Card */}
                     <div key="spotify-3">
-                        <Card className='flex flex-col items-center justify-center p-6 bg-[#1DB954] text-white'>
-                            <FaSpotify size='2rem' className='mb-3' />
-                            <p className='text-sm font-medium text-center'>Listen on Spotify</p>
+                        <Card className='flex flex-col items-center justify-center p-6'>
+                            {data?.artistInfo ? (
+                                <>
+                                    <FaFire size='2rem' className='mb-3 text-orange-500' />
+                                    <p className='text-2xl font-bold'>{data.artistInfo.popularity}</p>
+                                    <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>Popularity Score</p>
+                                </>
+                            ) : (
+                                <>
+                                    <FaSpotify size='2rem' className='mb-3 text-[#1DB954]' />
+                                    <p className='text-sm font-medium text-center'>Listen on Spotify</p>
+                                </>
+                            )}
                         </Card>
                     </div>
 
@@ -144,15 +247,21 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Album Cover Small */}
+                    {/* Followers Card */}
                     <div key="spotify-5">
-                        <Card 
-                            className='relative'
-                            style={{
-                                backgroundImage: `url(${data?.albumImageUrl ?? ''})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                            }}>
+                        <Card className='flex flex-col items-center justify-center p-6'>
+                            {data?.artistInfo ? (
+                                <>
+                                    <FaUsers size='2rem' className='mb-3 text-blue-500' />
+                                    <p className='text-lg font-bold'>{formatFollowers(data.artistInfo.followers)}</p>
+                                    <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>Followers</p>
+                                </>
+                            ) : (
+                                <>
+                                    <div className='w-16 h-16 bg-gray-300 dark:bg-dark-700 rounded-full mb-3 animate-pulse' />
+                                    <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>No artist data</p>
+                                </>
+                            )}
                         </Card>
                     </div>
 
@@ -180,6 +289,7 @@ function Loading() {
                             <div className='h-8 bg-gray-300 animate-pulse rounded-md w-3/4' />
                             <div className='h-4 bg-gray-300 animate-pulse rounded-md w-1/2' />
                             <div className='h-4 bg-gray-300 animate-pulse rounded-md w-2/3' />
+                            <div className='h-20 bg-gray-300 animate-pulse rounded-lg w-full' />
                         </div>
                         <div className='space-y-3'>
                             <div className='h-4 bg-gray-300 animate-pulse rounded-md w-full' />

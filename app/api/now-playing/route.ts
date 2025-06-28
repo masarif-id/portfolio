@@ -10,6 +10,12 @@ interface SpotifyTrack {
     external_urls: {
         spotify: string;
     };
+    artists: Array<{
+        name: string;
+        external_urls: {
+            spotify: string;
+        };
+    }>;
 }
 
 interface SpotifyApi {
@@ -17,6 +23,20 @@ interface SpotifyApi {
     currently_playing_type?: string;
     item?: SpotifyTrack;
     items?: Array<{ track: SpotifyTrack }>;
+}
+
+interface SpotifyArtist {
+    id: string;
+    name: string;
+    genres: string[];
+    followers: {
+        total: number;
+    };
+    images: Array<{ url: string }>;
+    external_urls: {
+        spotify: string;
+    };
+    popularity: number;
 }
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
@@ -56,10 +76,37 @@ const fetchSpotifyData = async (url: string, accessToken: string): Promise<Spoti
     return response.json();
 };
 
-const formatResponse = (data: SpotifyApi) => {
+const getArtistInfo = async (artistId: string, accessToken: string): Promise<SpotifyArtist | null> => {
+    try {
+        const response = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+        return response.json();
+    } catch (error) {
+        return null;
+    }
+};
+
+const formatResponse = async (data: SpotifyApi, accessToken: string) => {
     const track = data.item ?? data.items?.[0]?.track;
     if (!track) {
         throw new Error('No track data available');
+    }
+
+    // Get artist ID from the first artist
+    const firstArtist = track.artists?.[0];
+    let artistInfo = null;
+
+    if (firstArtist) {
+        // Extract artist ID from Spotify URL or use search
+        const artistId = firstArtist.external_urls?.spotify?.split('/').pop();
+        if (artistId) {
+            artistInfo = await getArtistInfo(artistId, accessToken);
+        }
     }
 
     return {
@@ -69,6 +116,14 @@ const formatResponse = (data: SpotifyApi) => {
         artist: track.album.artists.map((artist) => artist.name).join(', '),
         albumImageUrl: track.album.images[0]?.url,
         songUrl: track.external_urls.spotify,
+        artistInfo: artistInfo ? {
+            name: artistInfo.name,
+            genres: artistInfo.genres,
+            followers: artistInfo.followers.total,
+            image: artistInfo.images[0]?.url,
+            url: artistInfo.external_urls.spotify,
+            popularity: artistInfo.popularity,
+        } : null,
     };
 };
 
@@ -81,11 +136,11 @@ export async function GET() {
             data = await fetchSpotifyData(SPOTIFY_RECENTLY_PLAYED_URL, accessToken);
         }
 
-        return NextResponse.json(formatResponse(data));
+        return NextResponse.json(await formatResponse(data, accessToken));
     } catch (error) {
         const accessToken = await getAccessToken();
         const data = await fetchSpotifyData(SPOTIFY_RECENTLY_PLAYED_URL, accessToken);
 
-        return NextResponse.json(formatResponse(data));
+        return NextResponse.json(await formatResponse(data, accessToken));
     }
 }
