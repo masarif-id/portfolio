@@ -34,8 +34,8 @@ export default function Spotify() {
             }}
             className='flex h-full flex-col justify-end gap-3 bg-cover relative group'>
             
-            {/* Arrow button */}
-            <div className='absolute bottom-3 left-3'>
+            {/* Arrow button - moved to top right */}
+            <div className='absolute top-3 right-3'>
                 <Anchor
                     className='cancel-drag'
                     href='/spotify'
@@ -94,7 +94,11 @@ function CardFooter({ isPlaying }: Readonly<{ isPlaying?: boolean }>) {
 
 function Loading() {
     return (
-        <Card className='flex h-full flex-col justify-end gap-2'>
+        <Card className='flex h-full flex-col justify-end gap-2 relative'>
+            {/* Arrow button placeholder */}
+            <div className='absolute top-3 right-3'>
+                <div className='w-12 h-12 bg-gray-300 animate-pulse rounded-full' />
+            </div>
             <div className='flex flex-col gap-3 px-8'>
                 <LoadingText className='h-6' />
                 <LoadingText />
@@ -106,7 +110,11 @@ function Loading() {
 
 function ErrorDisplay() {
     return (
-        <Card className='flex h-full flex-col justify-end gap-3'>
+        <Card className='flex h-full flex-col justify-end gap-3 relative'>
+            {/* Arrow button placeholder */}
+            <div className='absolute top-3 right-3'>
+                <div className='w-12 h-12 bg-gray-300 rounded-full' />
+            </div>
             <div className='flex flex-col gap-3 px-8'>
                 <h2 className='font-pixelify-sans text-2xl'>Failed to load</h2>
                 <p className='font-medium'>Failed to load</p>
