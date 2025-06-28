@@ -10,6 +10,7 @@ interface Spotify {
     artist: string;
     albumImageUrl: string;
     songUrl: string;
+    trackId: string; // <-- TAMBAHKAN BARIS INI
 }
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
