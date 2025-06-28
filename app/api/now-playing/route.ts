@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 
 interface SpotifyTrack {
-    id: string; // Tambahkan ini
     name: string;
     album: {
         name: string;
@@ -70,7 +69,6 @@ const formatResponse = (data: SpotifyApi) => {
         artist: track.album.artists.map((artist) => artist.name).join(', '),
         albumImageUrl: track.album.images[0]?.url,
         songUrl: track.external_urls.spotify,
-        trackId: track.id, // <-- TAMBAHKAN BARIS INI
     };
 };
 
