@@ -52,46 +52,68 @@ export const layouts: { [key in Layouts]: Layout[] } = {
     ],
 };
 
-// Clean project layout with 12 images (3x4 grid pattern)
+// Gallery layout with realistic photo aspect ratios
 const projectLargeLayout: Layout[] = [
-    // Row 1
-    { i: 'images-1', x: 0, y: 0, w: 2, h: 1 },
-    { i: 'images-2', x: 2, y: 0, w: 1, h: 1 },
-    { i: 'images-3', x: 3, y: 0, w: 1, h: 1 },
+    // Row 1: Landscape HD (16:9) + Portrait + Square
+    { i: 'images-1', x: 0, y: 0, w: 2, h: 1 },  // Landscape HD 16:9
+    { i: 'images-2', x: 2, y: 0, w: 1, h: 2 },  // Portrait 3:4
+    { i: 'images-3', x: 3, y: 0, w: 1, h: 1 },  // Square 1:1
     
-    // Row 2
-    { i: 'images-4', x: 0, y: 1, w: 1, h: 1 },
-    { i: 'images-5', x: 1, y: 1, w: 1, h: 1 },
-    { i: 'images-6', x: 2, y: 1, w: 2, h: 1 },
+    // Row 2: Square + Landscape HD
+    { i: 'images-4', x: 0, y: 1, w: 1, h: 1 },  // Square 1:1
+    { i: 'images-5', x: 1, y: 1, w: 1, h: 1 },  // Square 1:1
+    { i: 'images-6', x: 3, y: 1, w: 1, h: 1 },  // Square 1:1
     
-    // Row 3
-    { i: 'images-7', x: 0, y: 2, w: 1, h: 2 },
-    { i: 'images-8', x: 1, y: 2, w: 2, h: 1 },
-    { i: 'images-9', x: 3, y: 2, w: 1, h: 1 },
+    // Row 3: Portrait + Landscape HD + Square
+    { i: 'images-7', x: 0, y: 2, w: 1, h: 2 },  // Portrait 3:4
+    { i: 'images-8', x: 1, y: 2, w: 2, h: 1 },  // Landscape HD 16:9
+    { i: 'images-9', x: 3, y: 2, w: 1, h: 1 },  // Square 1:1
     
-    // Row 4
-    { i: 'images-10', x: 1, y: 3, w: 1, h: 1 },
-    { i: 'images-11', x: 2, y: 3, w: 1, h: 1 },
-    { i: 'images-12', x: 3, y: 3, w: 1, h: 1 },
+    // Row 4: Square + Square + Square
+    { i: 'images-10', x: 1, y: 3, w: 1, h: 1 }, // Square 1:1
+    { i: 'images-11', x: 2, y: 3, w: 1, h: 1 }, // Square 1:1
+    { i: 'images-12', x: 3, y: 3, w: 1, h: 1 }, // Square 1:1
+    
+    // Row 5: Landscape panoramic
+    { i: 'images-13', x: 0, y: 4, w: 3, h: 1 }, // Wide landscape
+    { i: 'images-14', x: 3, y: 4, w: 1, h: 1 }, // Square 1:1
+    
+    // Row 6: Mixed ratios
+    { i: 'images-15', x: 0, y: 5, w: 1, h: 1 }, // Square 1:1
+    { i: 'images-16', x: 1, y: 5, w: 2, h: 1 }, // Landscape HD 16:9
+    { i: 'images-17', x: 3, y: 5, w: 1, h: 2 }, // Portrait 3:4
+    
+    // Row 7: Final row
+    { i: 'images-18', x: 0, y: 6, w: 1, h: 1 }, // Square 1:1
+    { i: 'images-19', x: 1, y: 6, w: 1, h: 1 }, // Square 1:1
+    { i: 'images-20', x: 2, y: 6, w: 1, h: 1 }, // Square 1:1
 ];
 
 export const projectLayouts: { [key in Layouts]: Layout[] } = {
     lg: projectLargeLayout,
     md: projectLargeLayout,
     sm: [
-        // Clean mobile layout (2 columns)
-        { i: 'images-1', x: 0, y: 0, w: 2, h: 1 },
-        { i: 'images-2', x: 0, y: 1, w: 1, h: 1 },
-        { i: 'images-3', x: 1, y: 1, w: 1, h: 1 },
-        { i: 'images-4', x: 0, y: 2, w: 1, h: 2 },
-        { i: 'images-5', x: 1, y: 2, w: 1, h: 1 },
-        { i: 'images-6', x: 1, y: 3, w: 1, h: 1 },
-        { i: 'images-7', x: 0, y: 4, w: 2, h: 1 },
-        { i: 'images-8', x: 0, y: 5, w: 1, h: 1 },
-        { i: 'images-9', x: 1, y: 5, w: 1, h: 1 },
-        { i: 'images-10', x: 0, y: 6, w: 1, h: 1 },
-        { i: 'images-11', x: 1, y: 6, w: 1, h: 1 },
-        { i: 'images-12', x: 0, y: 7, w: 2, h: 1 },
+        // Mobile layout with realistic ratios (2 columns)
+        { i: 'images-1', x: 0, y: 0, w: 2, h: 1 },  // Landscape HD
+        { i: 'images-2', x: 0, y: 1, w: 1, h: 2 },  // Portrait
+        { i: 'images-3', x: 1, y: 1, w: 1, h: 1 },  // Square
+        { i: 'images-4', x: 1, y: 2, w: 1, h: 1 },  // Square
+        { i: 'images-5', x: 0, y: 3, w: 1, h: 1 },  // Square
+        { i: 'images-6', x: 1, y: 3, w: 1, h: 1 },  // Square
+        { i: 'images-7', x: 0, y: 4, w: 2, h: 1 },  // Landscape HD
+        { i: 'images-8', x: 0, y: 5, w: 1, h: 2 },  // Portrait
+        { i: 'images-9', x: 1, y: 5, w: 1, h: 1 },  // Square
+        { i: 'images-10', x: 1, y: 6, w: 1, h: 1 }, // Square
+        { i: 'images-11', x: 0, y: 7, w: 1, h: 1 }, // Square
+        { i: 'images-12', x: 1, y: 7, w: 1, h: 1 }, // Square
+        { i: 'images-13', x: 0, y: 8, w: 2, h: 1 }, // Landscape wide
+        { i: 'images-14', x: 0, y: 9, w: 1, h: 1 }, // Square
+        { i: 'images-15', x: 1, y: 9, w: 1, h: 1 }, // Square
+        { i: 'images-16', x: 0, y: 10, w: 2, h: 1 }, // Landscape HD
+        { i: 'images-17', x: 0, y: 11, w: 1, h: 2 }, // Portrait
+        { i: 'images-18', x: 1, y: 11, w: 1, h: 1 }, // Square
+        { i: 'images-19', x: 1, y: 12, w: 1, h: 1 }, // Square
+        { i: 'images-20', x: 0, y: 13, w: 2, h: 1 }, // Landscape HD
     ],
 };
 
