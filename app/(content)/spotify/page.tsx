@@ -120,8 +120,49 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Artist Info Card */}
+                    {/* Popularity Card - moved to landscape position */}
                     <div key="spotify-2">
+                        <Card className='flex items-center justify-between p-6'>
+                            {data?.artistInfo ? (
+                                <>
+                                    <div className='flex items-center gap-4'>
+                                        <div className='w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center'>
+                                            <FaFire className='text-white' size='1.5rem' />
+                                        </div>
+                                        <div>
+                                            <p className='text-2xl font-bold'>{data.artistInfo.popularity}</p>
+                                            <p className='text-sm text-gray-600 dark:text-gray-400'>Popularity Score</p>
+                                        </div>
+                                    </div>
+                                    <div className='text-right'>
+                                        <p className='text-sm text-gray-600 dark:text-gray-400'>Artist Rating</p>
+                                        <div className='flex gap-1 mt-1'>
+                                            {[...Array(5)].map((_, i) => (
+                                                <div 
+                                                    key={i}
+                                                    className={`w-2 h-2 rounded-full ${
+                                                        i < Math.floor(data.artistInfo!.popularity / 20) 
+                                                            ? 'bg-orange-500' 
+                                                            : 'bg-gray-300 dark:bg-gray-600'
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className='flex items-center gap-4'>
+                                    <div className='w-12 h-12 rounded-full bg-[#1DB954] flex items-center justify-center'>
+                                        <FaSpotify className='text-white' size='1.5rem' />
+                                    </div>
+                                    <p className='text-sm font-medium'>Listen on Spotify</p>
+                                </div>
+                            )}
+                        </Card>
+                    </div>
+
+                    {/* Artist Info Card - moved to square position */}
+                    <div key="spotify-3">
                         <Card className='flex flex-col justify-center p-6'>
                             {data?.artistInfo ? (
                                 <div className='space-y-3'>
@@ -164,28 +205,6 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Popularity Card */}
-                    <div key="spotify-3">
-                        <Card className='flex flex-col items-center justify-center p-6'>
-                            {data?.artistInfo ? (
-                                <>
-                                    <div className='w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center mb-3'>
-                                        <FaFire className='text-white' size='1.5rem' />
-                                    </div>
-                                    <p className='text-2xl font-bold'>{data.artistInfo.popularity}</p>
-                                    <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>Popularity Score</p>
-                                </>
-                            ) : (
-                                <>
-                                    <div className='w-12 h-12 rounded-full bg-[#1DB954] flex items-center justify-center mb-3'>
-                                        <FaSpotify className='text-white' size='1.5rem' />
-                                    </div>
-                                    <p className='text-sm font-medium text-center'>Listen on Spotify</p>
-                                </>
-                            )}
-                        </Card>
-                    </div>
-
                     {/* Playing Status */}
                     <div key="spotify-4">
                         <Card className='flex flex-col items-center justify-center p-6'>
@@ -204,24 +223,43 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Followers Card */}
+                    {/* Followers Card - moved to landscape position */}
                     <div key="spotify-5">
-                        <Card className='flex flex-col items-center justify-center p-6'>
+                        <Card className='flex items-center justify-between p-6'>
                             {data?.artistInfo ? (
                                 <>
-                                    <div className='w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center mb-3'>
-                                        <FaUsers className='text-white' size='1.5rem' />
+                                    <div className='flex items-center gap-4'>
+                                        <div className='w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center'>
+                                            <FaUsers className='text-white' size='1.5rem' />
+                                        </div>
+                                        <div>
+                                            <p className='text-lg font-bold'>{formatFollowers(data.artistInfo.followers)}</p>
+                                            <p className='text-sm text-gray-600 dark:text-gray-400'>Followers</p>
+                                        </div>
                                     </div>
-                                    <p className='text-lg font-bold'>{formatFollowers(data.artistInfo.followers)}</p>
-                                    <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>Followers</p>
+                                    <div className='text-right'>
+                                        <p className='text-sm text-gray-600 dark:text-gray-400'>Social Reach</p>
+                                        <div className='flex gap-1 mt-1 justify-end'>
+                                            {[...Array(5)].map((_, i) => (
+                                                <div 
+                                                    key={i}
+                                                    className={`w-2 h-2 rounded-full ${
+                                                        data.artistInfo!.followers > 1000000 * (i + 1) 
+                                                            ? 'bg-blue-500' 
+                                                            : 'bg-gray-300 dark:bg-gray-600'
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
                                 </>
                             ) : (
-                                <>
-                                    <div className='w-12 h-12 bg-gray-300 dark:bg-dark-700 rounded-full mb-3 flex items-center justify-center'>
+                                <div className='flex items-center gap-4'>
+                                    <div className='w-12 h-12 bg-gray-300 dark:bg-dark-700 rounded-full flex items-center justify-center'>
                                         <FaSpotify className='text-gray-600 dark:text-gray-400' size='1.5rem' />
                                     </div>
-                                    <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>No artist data</p>
-                                </>
+                                    <p className='text-sm text-gray-600 dark:text-gray-400'>No artist data</p>
+                                </div>
                             )}
                         </Card>
                     </div>
