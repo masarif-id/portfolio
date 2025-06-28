@@ -58,6 +58,11 @@ const projectLargeLayout: Layout[] = [
     { i: 'images-3', x: 3, y: 0, w: 1, h: 2 },
     { i: 'images-4', x: 0, y: 1, w: 1, h: 1 },
     { i: 'images-5', x: 1, y: 1, w: 2, h: 1 },
+    { i: 'images-6', x: 0, y: 2, w: 1, h: 1 },
+    { i: 'images-7', x: 1, y: 2, w: 1, h: 1 },
+    { i: 'images-8', x: 2, y: 2, w: 2, h: 1 },
+    { i: 'images-9', x: 0, y: 3, w: 2, h: 1 },
+    { i: 'images-10', x: 2, y: 3, w: 2, h: 1 },
 ];
 
 export const projectLayouts: { [key in Layouts]: Layout[] } = {
@@ -68,7 +73,12 @@ export const projectLayouts: { [key in Layouts]: Layout[] } = {
         { i: 'images-2', x: 0, y: 1, w: 1, h: 1 },
         { i: 'images-3', x: 1, y: 1, w: 1, h: 2 },
         { i: 'images-4', x: 0, y: 2, w: 1, h: 1 },
-        { i: 'images-5', x: 2, y: 3, w: 2, h: 1 },
+        { i: 'images-5', x: 0, y: 3, w: 2, h: 1 },
+        { i: 'images-6', x: 0, y: 4, w: 1, h: 1 },
+        { i: 'images-7', x: 1, y: 4, w: 1, h: 1 },
+        { i: 'images-8', x: 0, y: 5, w: 2, h: 1 },
+        { i: 'images-9', x: 0, y: 6, w: 1, h: 1 },
+        { i: 'images-10', x: 1, y: 6, w: 1, h: 1 },
     ],
 };
 
