@@ -1,13 +1,21 @@
-import { getLatestPost } from '@/utils/mdx';
 import { formatDate } from '@/utils/lib';
 import Link from 'next/link';
 import { FaArrowRight } from 'react-icons/fa6';
 import Anchor from '../../ui/anchor';
 import Card from '../../ui/card';
 
-export default function Article() {
-    const post = getLatestPost();
+interface ArticleProps {
+    post: {
+        slug: string;
+        metadata: {
+            title: string;
+            description: string;
+            date: string;
+        };
+    };
+}
 
+export default function Article({ post }: ArticleProps) {
     return (
         <Card className='flex flex-col justify-center gap-6 p-8'>
             <h2 className='font-pixelify-sans truncate text-2xl' title={post.metadata.title}>
