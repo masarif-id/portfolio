@@ -182,37 +182,43 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Enhanced Now Playing Card with Extended Visualizer at Bottom */}
+                    {/* Enhanced Now Playing Card with Full Visualizer */}
                     <div key="spotify-4">
-                        <Card className='relative flex flex-col justify-between p-6 overflow-hidden'>
-                            {/* Content at top */}
-                            <div className='flex flex-col items-center gap-3 z-10 relative'>
-                                <p className='text-sm font-medium text-center text-[#1DB954]'>
+                        <Card className='relative overflow-hidden p-0'>
+                            {/* Content overlay */}
+                            <div className='absolute inset-0 z-10 flex flex-col justify-center items-center'>
+                                <p className='text-sm font-medium text-center text-[#1DB954] bg-white/90 dark:bg-dark-900/90 px-3 py-1 rounded-full backdrop-blur-sm'>
                                     {data?.isPlaying ? 'Now Playing' : 'Last Played'}
                                 </p>
                             </div>
                             
-                            {/* Extended Visualizer at Bottom */}
-                            {data?.isPlaying && (
-                                <div className='absolute bottom-0 left-0 right-0 flex items-end justify-center gap-1 p-4'>
-                                    <div className='w-1 h-3 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.85s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-4 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.62s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-6 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.26s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-5 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.85s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-3 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.49s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-7 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.26s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-4 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.73s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-5 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.91s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-6 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.67s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-3 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.15s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-8 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.58s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-4 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.94s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-5 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.76s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-6 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.08s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-3 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.82s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-7 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.65s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-4 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.12s_ease_infinite] rounded-full' />
-                                    <div className='w-1 h-5 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.88s_ease_infinite] rounded-full' />
+                            {/* Full Card Visualizer Background */}
+                            {data?.isPlaying ? (
+                                <div className='absolute inset-0 flex items-end justify-center gap-1'>
+                                    {/* Generate many bars to fill the card */}
+                                    {Array.from({ length: 40 }, (_, i) => (
+                                        <div 
+                                            key={i}
+                                            className={`flex-1 bg-gradient-to-t from-[#1DB954] to-[#1ed760] rounded-t-sm animate-[playing_${0.5 + (i % 10) * 0.1}s_ease_infinite]`}
+                                            style={{
+                                                height: `${20 + (i % 8) * 10}%`,
+                                                animationDelay: `${i * 0.05}s`
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className='absolute inset-0 flex items-end justify-center gap-1'>
+                                    {/* Static bars when not playing */}
+                                    {Array.from({ length: 40 }, (_, i) => (
+                                        <div 
+                                            key={i}
+                                            className='flex-1 bg-gray-300 dark:bg-dark-700 rounded-t-sm'
+                                            style={{
+                                                height: `${15 + (i % 6) * 8}%`
+                                            }}
+                                        />
+                                    ))}
                                 </div>
                             )}
                         </Card>
