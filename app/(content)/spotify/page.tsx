@@ -65,6 +65,23 @@ export default function SpotifyPage() {
                                     <p className='text-lg font-medium text-gray-800 dark:text-gray-200'>{data?.artist}</p>
                                     <p className='text-gray-600 dark:text-gray-400'>{data?.album}</p>
                                 </div>
+                                
+                                {/* Playing Status */}
+                                <div className='flex items-center gap-3 py-4'>
+                                    {data?.isPlaying && (
+                                        <div className='inline-flex items-center justify-center gap-1'>
+                                            <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                            <div className='w-1 h-4 animate-[playing_0.62s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                            <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                            <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                            <div className='w-1 h-4 animate-[playing_0.49s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                            <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                        </div>
+                                    )}
+                                    <p className='text-[#1DB954] font-medium'>
+                                        {data?.isPlaying ? 'Now Playing' : 'Offline'}
+                                    </p>
+                                </div>
 
                                 {/* Spotify Links */}
                                 <div className='flex flex-wrap items-center gap-3 pt-4'>
@@ -182,50 +199,21 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Enhanced Now Playing Card with Full Visualizer */}
+                    {/* Playing Status */}
                     <div key="spotify-4">
-                        <Card className='relative overflow-hidden p-0'>
-                            {/* Content overlay */}
-                            <div className='absolute inset-0 z-10 flex flex-col justify-center items-center'>
-                                <p className='text-sm font-bold text-center text-black dark:text-white drop-shadow-lg'>
-                                    {data?.isPlaying ? 'Now Playing' : 'Last Played'}
-                                </p>
+                        <Card className='flex flex-col items-center justify-center p-6'>
+                            <div className='flex items-center gap-3 mb-3'>
+                                {data?.isPlaying && (
+                                    <div className='inline-flex items-center justify-center gap-1'>
+                                        <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                        <div className='w-1 h-4 animate-[playing_0.62s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                        <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                    </div>
+                                )}
                             </div>
-                            
-                            {/* Full Card Visualizer Background - Centered */}
-                            {data?.isPlaying ? (
-                                <div className='absolute inset-0 flex items-center justify-center'>
-                                    <div className='flex items-end gap-1 h-full w-full justify-center px-4'>
-                                        {/* Generate bars with wider width */}
-                                        {Array.from({ length: 20 }, (_, i) => (
-                                            <div 
-                                                key={i}
-                                                className={`bg-gradient-to-t from-[#1DB954] to-[#1ed760] rounded-t-md visualizer-bar-${(i % 8) + 1}`}
-                                                style={{
-                                                    width: '8px',
-                                                    animationDelay: `${i * 0.1}s`
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className='absolute inset-0 flex items-center justify-center'>
-                                    <div className='flex items-end gap-1 h-full w-full justify-center px-4'>
-                                        {/* Static bars when not playing */}
-                                        {Array.from({ length: 20 }, (_, i) => (
-                                            <div 
-                                                key={i}
-                                                className='bg-gray-300 dark:bg-dark-700 rounded-t-md'
-                                                style={{
-                                                    width: '8px',
-                                                    height: `${20 + (i % 6) * 10}%`
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                            <p className='text-sm font-medium text-center text-[#1DB954]'>
+                                {data?.isPlaying ? 'Now Playing' : 'Last Played'}
+                            </p>
                         </Card>
                     </div>
 
