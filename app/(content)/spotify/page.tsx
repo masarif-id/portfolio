@@ -114,8 +114,8 @@ export default function SpotifyPage() {
                                 The data is fetched in real-time from the Spotify API and updates automatically.
                             </p>
                             <p>
-                                You can explore the artist's profile, see their popularity metrics, genres, and follower count 
-                                to discover more about the music I'm listening to.
+                                You can explore the artist&apos;s profile, see their popularity metrics, genres, and follower count 
+                                to discover more about the music I&apos;m listening to.
                             </p>
                         </div>
                     </div>
