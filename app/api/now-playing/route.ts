@@ -32,7 +32,6 @@ interface SpotifyArtist {
     followers: {
         total: number;
     };
-    images: Array<{ url: string }>;
     external_urls: {
         spotify: string;
     };
@@ -120,7 +119,6 @@ const formatResponse = async (data: SpotifyApi, accessToken: string) => {
             name: artistInfo.name,
             genres: artistInfo.genres,
             followers: artistInfo.followers.total,
-            image: artistInfo.images[0]?.url,
             url: artistInfo.external_urls.spotify,
             popularity: artistInfo.popularity,
         } : null,

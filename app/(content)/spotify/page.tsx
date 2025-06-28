@@ -7,13 +7,11 @@ import Card from '@/components/ui/card';
 import GridLayout from '@/components/grid/layout';
 import { FaX, FaSpotify, FaArrowRight, FaUsers, FaFire } from 'react-icons/fa6';
 import { spotifyLayouts } from '@/config/grid';
-import Image from 'next/image';
 
 interface ArtistInfo {
     name: string;
     genres: string[];
     followers: number;
-    image: string;
     url: string;
     popularity: number;
 }
@@ -173,16 +171,9 @@ export default function SpotifyPage() {
                             {data?.artistInfo ? (
                                 <div className='space-y-3'>
                                     <div className='flex items-center gap-3'>
-                                        {data.artistInfo.image && (
-                                            <div className='relative w-12 h-12 rounded-full overflow-hidden'>
-                                                <Image
-                                                    src={data.artistInfo.image}
-                                                    alt={data.artistInfo.name}
-                                                    fill
-                                                    className='object-cover'
-                                                />
-                                            </div>
-                                        )}
+                                        <div className='w-12 h-12 rounded-full bg-[#1DB954] flex items-center justify-center'>
+                                            <FaSpotify className='text-white' size='1.5rem' />
+                                        </div>
                                         <div>
                                             <h3 className='font-pixelify-sans text-lg line-clamp-1'>{data.artistInfo.name}</h3>
                                             <p className='text-sm text-gray-600 dark:text-gray-400'>
@@ -204,8 +195,15 @@ export default function SpotifyPage() {
                                 </div>
                             ) : (
                                 <div className='space-y-3'>
-                                    <h3 className='font-pixelify-sans text-lg line-clamp-2'>{data?.artist}</h3>
-                                    <p className='text-sm text-gray-600 dark:text-gray-400'>Artist information unavailable</p>
+                                    <div className='flex items-center gap-3'>
+                                        <div className='w-12 h-12 rounded-full bg-gray-300 dark:bg-dark-700 flex items-center justify-center'>
+                                            <FaSpotify className='text-gray-600 dark:text-gray-400' size='1.5rem' />
+                                        </div>
+                                        <div>
+                                            <h3 className='font-pixelify-sans text-lg line-clamp-2'>{data?.artist}</h3>
+                                            <p className='text-sm text-gray-600 dark:text-gray-400'>Artist information unavailable</p>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </Card>
@@ -258,7 +256,9 @@ export default function SpotifyPage() {
                                 </>
                             ) : (
                                 <>
-                                    <div className='w-16 h-16 bg-gray-300 dark:bg-dark-700 rounded-full mb-3 animate-pulse' />
+                                    <div className='w-16 h-16 bg-gray-300 dark:bg-dark-700 rounded-full mb-3 flex items-center justify-center'>
+                                        <FaSpotify className='text-gray-600 dark:text-gray-400' size='2rem' />
+                                    </div>
                                     <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>No artist data</p>
                                 </>
                             )}
