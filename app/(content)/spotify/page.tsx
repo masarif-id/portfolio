@@ -187,34 +187,36 @@ export default function SpotifyPage() {
                         <Card className='relative overflow-hidden p-0'>
                             {/* Content overlay */}
                             <div className='absolute inset-0 z-10 flex flex-col justify-center items-center'>
-                                <p className='text-sm font-medium text-center text-[#1DB954] bg-white/90 dark:bg-dark-900/90 px-3 py-1 rounded-full backdrop-blur-sm'>
+                                <p className='text-sm font-bold text-center text-white drop-shadow-lg'>
                                     {data?.isPlaying ? 'Now Playing' : 'Last Played'}
                                 </p>
                             </div>
                             
                             {/* Full Card Visualizer Background */}
                             {data?.isPlaying ? (
-                                <div className='absolute inset-0 flex items-end justify-center gap-1'>
-                                    {/* Generate many bars to fill the card */}
-                                    {Array.from({ length: 40 }, (_, i) => (
+                                <div className='absolute inset-0 flex items-end justify-center gap-1 p-2'>
+                                    {/* Generate bars with wider width */}
+                                    {Array.from({ length: 20 }, (_, i) => (
                                         <div 
                                             key={i}
-                                            className={`flex-1 bg-gradient-to-t from-[#1DB954] to-[#1ed760] rounded-t-sm visualizer-bar-${(i % 8) + 1}`}
+                                            className={`bg-gradient-to-t from-[#1DB954] to-[#1ed760] rounded-t-md visualizer-bar-${(i % 8) + 1}`}
                                             style={{
-                                                animationDelay: `${i * 0.05}s`
+                                                width: '8px',
+                                                animationDelay: `${i * 0.1}s`
                                             }}
                                         />
                                     ))}
                                 </div>
                             ) : (
-                                <div className='absolute inset-0 flex items-end justify-center gap-1'>
+                                <div className='absolute inset-0 flex items-end justify-center gap-1 p-2'>
                                     {/* Static bars when not playing */}
-                                    {Array.from({ length: 40 }, (_, i) => (
+                                    {Array.from({ length: 20 }, (_, i) => (
                                         <div 
                                             key={i}
-                                            className='flex-1 bg-gray-300 dark:bg-dark-700 rounded-t-sm'
+                                            className='bg-gray-300 dark:bg-dark-700 rounded-t-md'
                                             style={{
-                                                height: `${15 + (i % 6) * 8}%`
+                                                width: '8px',
+                                                height: `${20 + (i % 6) * 10}%`
                                             }}
                                         />
                                     ))}
