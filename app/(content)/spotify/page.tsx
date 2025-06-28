@@ -83,35 +83,6 @@ export default function SpotifyPage() {
                                     </p>
                                 </div>
 
-                                {/* Artist Info */}
-                                {data?.artistInfo && (
-                                    <div className='bg-gray-50 dark:bg-dark-800 rounded-lg p-4 space-y-3'>
-                                        <h3 className='font-pixelify-sans text-lg'>Artist Info</h3>
-                                        <div className='flex items-center gap-3'>
-                                            <FaUsers className='text-gray-600 dark:text-gray-400' />
-                                            <span className='text-sm'>{formatFollowers(data.artistInfo.followers)} followers</span>
-                                        </div>
-                                        <div className='flex items-center gap-3'>
-                                            <FaFire className='text-orange-500' />
-                                            <span className='text-sm'>Popularity: {data.artistInfo.popularity}/100</span>
-                                        </div>
-                                        {data.artistInfo.genres.length > 0 && (
-                                            <div>
-                                                <p className='text-sm font-medium mb-2'>Genres:</p>
-                                                <div className='flex flex-wrap gap-2'>
-                                                    {data.artistInfo.genres.slice(0, 3).map((genre) => (
-                                                        <span 
-                                                            key={genre}
-                                                            className='px-2 py-1 bg-gray-200 dark:bg-dark-700 rounded-full text-xs'>
-                                                            {genre}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
                                 {/* Spotify Links */}
                                 <div className='flex flex-wrap items-center gap-3 pt-4'>
                                     <a
