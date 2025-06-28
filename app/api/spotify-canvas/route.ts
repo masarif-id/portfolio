@@ -14,44 +14,72 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        // Using the correct endpoint from curl example: /spotify/canvas
-        const url = `${PAXSENIX_BASE_URL}/spotify/canvas?id=${trackId}`;
-        console.log('Fetching canvas from:', url);
+        // Try different endpoint formats based on documentation
+        const endpoints = [
+            `/spotify/canvas?id=${trackId}`,
+            `/spotify?type=canvas&id=${trackId}`,
+            `/spotify?canvas=${trackId}`,
+            `/canvas?id=${trackId}`,
+        ];
 
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bearer ${PAXSENIX_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-        });
+        let lastError = '';
+        
+        for (const endpoint of endpoints) {
+            const url = `${PAXSENIX_BASE_URL}${endpoint}`;
+            console.log(`Trying canvas endpoint: ${url}`);
 
-        console.log('Canvas API response status:', response.status);
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${PAXSENIX_API_KEY}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Canvas API error: ${response.status} - ${errorText}`);
-            
-            if (response.status === 404) {
-                return NextResponse.json({ 
-                    error: 'Canvas not found for this track',
-                    canvas_url: null 
-                }, { status: 200 });
+                console.log(`Response status for ${endpoint}:`, response.status);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Canvas data received:', data);
+                    return NextResponse.json(data);
+                }
+
+                const errorText = await response.text();
+                lastError = `${response.status} - ${errorText}`;
+                console.log(`Error for ${endpoint}:`, lastError);
+
+                // If it's not a 404, continue trying other endpoints
+                if (response.status !== 404) {
+                    continue;
+                }
+            } catch (fetchError) {
+                console.error(`Fetch error for ${endpoint}:`, fetchError);
+                lastError = `Fetch error: ${fetchError}`;
+                continue;
             }
-            
-            return NextResponse.json({ 
-                error: `API error: ${response.status}`,
-                canvas_url: null 
-            }, { status: 200 });
         }
 
-        const data = await response.json();
-        console.log('Canvas data received:', data);
-        return NextResponse.json(data);
+        // If all endpoints failed, return the last error
+        console.error('All canvas endpoints failed. Last error:', lastError);
+        return NextResponse.json({ 
+            error: `All endpoints failed. Last error: ${lastError}`,
+            canvas_url: null,
+            debug: {
+                trackId,
+                triedEndpoints: endpoints,
+                lastError
+            }
+        }, { status: 200 });
+
     } catch (error) {
         console.error('Error fetching canvas:', error);
         return NextResponse.json({ 
             error: 'Failed to fetch canvas',
-            canvas_url: null 
+            canvas_url: null,
+            debug: {
+                trackId,
+                error: error.toString()
+            }
         }, { status: 200 });
     }
 }

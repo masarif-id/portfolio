@@ -9,12 +9,18 @@ import Card from '@/components/ui/card';
 
 interface CanvasData {
     canvas_url?: string;
+    canvas?: string;
+    video_url?: string;
+    url?: string;
     error?: string;
+    debug?: any;
 }
 
 interface LyricsData {
     lyrics?: string;
+    text?: string;
     error?: string;
+    debug?: any;
 }
 
 interface TrackInfo {
@@ -85,6 +91,21 @@ export default function SpotifyTrackPage() {
         }
     };
 
+    // Get canvas URL from different possible response formats
+    const getCanvasUrl = () => {
+        if (!canvasData) return null;
+        return canvasData.canvas_url || canvasData.canvas || canvasData.video_url || canvasData.url || null;
+    };
+
+    // Get lyrics text from different possible response formats
+    const getLyricsText = () => {
+        if (!lyricsData) return null;
+        return lyricsData.lyrics || lyricsData.text || null;
+    };
+
+    const canvasUrl = getCanvasUrl();
+    const lyricsText = getLyricsText();
+
     return (
         <Container className="min-h-screen py-8">
             {/* Header */}
@@ -104,16 +125,49 @@ export default function SpotifyTrackPage() {
                 )}
             </div>
 
-            {/* Debug Info */}
+            {/* Enhanced Debug Info */}
             <Card className="mb-8 p-4 bg-gray-100 dark:bg-dark-800">
                 <h3 className="font-bold mb-2">Debug Info:</h3>
-                <p>Track ID: {trackId}</p>
-                <p>Canvas Loading: {canvasLoading ? 'Yes' : 'No'}</p>
-                <p>Canvas URL: {canvasData?.canvas_url || 'Not available'}</p>
-                <p>Canvas Error: {canvasData?.error || 'None'}</p>
-                <p>Lyrics Loading: {lyricsLoading ? 'Yes' : 'No'}</p>
-                <p>Lyrics Available: {lyricsData?.lyrics ? 'Yes' : 'No'}</p>
-                <p>Lyrics Error: {lyricsData?.error || 'None'}</p>
+                <div className="space-y-2 text-sm">
+                    <p><strong>Track ID:</strong> {trackId}</p>
+                    <p><strong>Track URL:</strong> {trackInfo?.songUrl}</p>
+                    
+                    <div className="border-t pt-2 mt-2">
+                        <p><strong>Canvas Loading:</strong> {canvasLoading ? 'Yes' : 'No'}</p>
+                        <p><strong>Canvas URL Found:</strong> {canvasUrl ? 'Yes' : 'No'}</p>
+                        <p><strong>Canvas URL:</strong> {canvasUrl || 'Not available'}</p>
+                        <p><strong>Canvas Error:</strong> {canvasData?.error || 'None'}</p>
+                        {canvasData?.debug && (
+                            <details className="mt-2">
+                                <summary className="cursor-pointer font-medium">Canvas Debug Details</summary>
+                                <pre className="mt-2 p-2 bg-gray-200 dark:bg-dark-700 rounded text-xs overflow-auto">
+                                    {JSON.stringify(canvasData.debug, null, 2)}
+                                </pre>
+                            </details>
+                        )}
+                    </div>
+                    
+                    <div className="border-t pt-2 mt-2">
+                        <p><strong>Lyrics Loading:</strong> {lyricsLoading ? 'Yes' : 'No'}</p>
+                        <p><strong>Lyrics Available:</strong> {lyricsText ? 'Yes' : 'No'}</p>
+                        <p><strong>Lyrics Error:</strong> {lyricsData?.error || 'None'}</p>
+                        {lyricsData?.debug && (
+                            <details className="mt-2">
+                                <summary className="cursor-pointer font-medium">Lyrics Debug Details</summary>
+                                <pre className="mt-2 p-2 bg-gray-200 dark:bg-dark-700 rounded text-xs overflow-auto">
+                                    {JSON.stringify(lyricsData.debug, null, 2)}
+                                </pre>
+                            </details>
+                        )}
+                    </div>
+
+                    <div className="border-t pt-2 mt-2">
+                        <p><strong>Full Canvas Response:</strong></p>
+                        <pre className="mt-1 p-2 bg-gray-200 dark:bg-dark-700 rounded text-xs overflow-auto">
+                            {JSON.stringify(canvasData, null, 2)}
+                        </pre>
+                    </div>
+                </div>
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -123,17 +177,22 @@ export default function SpotifyTrackPage() {
                         <div className="flex items-center justify-center h-full">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
                         </div>
-                    ) : canvasData?.canvas_url ? (
+                    ) : canvasUrl ? (
                         <div className="relative w-full h-full">
                             <video
-                                src={canvasData.canvas_url}
+                                src={canvasUrl}
                                 autoPlay
                                 loop
                                 muted={isMuted}
                                 className="w-full h-full object-cover"
                                 onPlay={() => setIsPlaying(true)}
                                 onPause={() => setIsPlaying(false)}
-                                onError={(e) => console.error('Video error:', e)}
+                                onError={(e) => {
+                                    console.error('Video error:', e);
+                                    console.error('Video src:', canvasUrl);
+                                }}
+                                onLoadStart={() => console.log('Video load started')}
+                                onCanPlay={() => console.log('Video can play')}
                             />
                             
                             {/* Video Controls */}
@@ -176,9 +235,9 @@ export default function SpotifyTrackPage() {
                             <div className="flex items-center justify-center h-32">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                             </div>
-                        ) : lyricsData?.lyrics ? (
+                        ) : lyricsText ? (
                             <div className="whitespace-pre-line leading-relaxed text-gray-700 dark:text-gray-300">
-                                {lyricsData.lyrics}
+                                {lyricsText}
                             </div>
                         ) : (
                             <div className="text-center text-gray-500">
