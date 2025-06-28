@@ -199,9 +199,8 @@ export default function SpotifyPage() {
                                     {Array.from({ length: 40 }, (_, i) => (
                                         <div 
                                             key={i}
-                                            className={`flex-1 bg-gradient-to-t from-[#1DB954] to-[#1ed760] rounded-t-sm animate-[playing_${0.5 + (i % 10) * 0.1}s_ease_infinite]`}
+                                            className={`flex-1 bg-gradient-to-t from-[#1DB954] to-[#1ed760] rounded-t-sm visualizer-bar-${(i % 8) + 1}`}
                                             style={{
-                                                height: `${20 + (i % 8) * 10}%`,
                                                 animationDelay: `${i * 0.05}s`
                                             }}
                                         />

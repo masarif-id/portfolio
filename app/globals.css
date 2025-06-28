@@ -54,6 +54,57 @@
     }
 }
 
+/* Visualizer animations with different speeds */
+@keyframes visualizer-1 {
+    0%, 100% { height: 20%; }
+    50% { height: 80%; }
+}
+
+@keyframes visualizer-2 {
+    0%, 100% { height: 30%; }
+    50% { height: 90%; }
+}
+
+@keyframes visualizer-3 {
+    0%, 100% { height: 25%; }
+    50% { height: 70%; }
+}
+
+@keyframes visualizer-4 {
+    0%, 100% { height: 40%; }
+    50% { height: 100%; }
+}
+
+@keyframes visualizer-5 {
+    0%, 100% { height: 15%; }
+    50% { height: 85%; }
+}
+
+@keyframes visualizer-6 {
+    0%, 100% { height: 35%; }
+    50% { height: 75%; }
+}
+
+@keyframes visualizer-7 {
+    0%, 100% { height: 20%; }
+    50% { height: 95%; }
+}
+
+@keyframes visualizer-8 {
+    0%, 100% { height: 45%; }
+    50% { height: 65%; }
+}
+
+/* Visualizer classes */
+.visualizer-bar-1 { animation: visualizer-1 0.8s ease-in-out infinite; }
+.visualizer-bar-2 { animation: visualizer-2 0.6s ease-in-out infinite; }
+.visualizer-bar-3 { animation: visualizer-3 1.2s ease-in-out infinite; }
+.visualizer-bar-4 { animation: visualizer-4 0.9s ease-in-out infinite; }
+.visualizer-bar-5 { animation: visualizer-5 0.7s ease-in-out infinite; }
+.visualizer-bar-6 { animation: visualizer-6 1.1s ease-in-out infinite; }
+.visualizer-bar-7 { animation: visualizer-7 0.5s ease-in-out infinite; }
+.visualizer-bar-8 { animation: visualizer-8 1.0s ease-in-out infinite; }
+
 /* React Grid Layout */
 .react-grid-layout {
     @apply relative transition-[height] duration-200 ease-in-out;
