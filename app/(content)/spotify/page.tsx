@@ -182,10 +182,30 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Playing Status */}
+                    {/* Enhanced Now Playing Card with Big Visualizer Background */}
                     <div key="spotify-4">
-                        <Card className='flex flex-col items-center justify-center p-6'>
-                            <div className='flex items-center gap-3 mb-3'>
+                        <Card className='relative flex flex-col items-center justify-center p-6 overflow-hidden'>
+                            {/* Big Visualizer Background */}
+                            {data?.isPlaying && (
+                                <div className='absolute inset-0 flex items-center justify-center opacity-20'>
+                                    <div className='flex items-end gap-2 scale-[3]'>
+                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.85s_ease_infinite] rounded-full' />
+                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.62s_ease_infinite] rounded-full' />
+                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.26s_ease_infinite] rounded-full' />
+                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.85s_ease_infinite] rounded-full' />
+                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.49s_ease_infinite] rounded-full' />
+                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_1.26s_ease_infinite] rounded-full' />
+                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.73s_ease_infinite] rounded-full' />
+                                        <div className='w-2 bg-gradient-to-t from-[#1DB954] to-[#1ed760] animate-[playing_0.91s_ease_infinite] rounded-full' />
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Radial gradient overlay for depth */}
+                            <div className='absolute inset-0 bg-gradient-radial from-transparent via-transparent to-white/30 dark:to-dark-900/30' />
+                            
+                            {/* Content */}
+                            <div className='relative z-10 flex flex-col items-center gap-3'>
                                 {data?.isPlaying && (
                                     <div className='inline-flex items-center justify-center gap-1'>
                                         <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
@@ -193,10 +213,10 @@ export default function SpotifyPage() {
                                         <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
                                     </div>
                                 )}
+                                <p className='text-sm font-medium text-center text-[#1DB954]'>
+                                    {data?.isPlaying ? 'Now Playing' : 'Last Played'}
+                                </p>
                             </div>
-                            <p className='text-sm font-medium text-center text-[#1DB954]'>
-                                {data?.isPlaying ? 'Now Playing' : 'Last Played'}
-                            </p>
                         </Card>
                     </div>
 

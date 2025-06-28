@@ -112,3 +112,8 @@ div[mapboxgl-children] {
 .prose *:hover > .anchor {
     @apply visible;
 }
+
+/* Custom gradient for radial effect */
+.bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+}
