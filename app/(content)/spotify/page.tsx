@@ -133,6 +133,7 @@ export default function SpotifyPage() {
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                             }}>
+                            <div className='w-full h-full' />
                         </Card>
                     </div>
 
@@ -273,7 +274,9 @@ function Loading() {
                 <GridLayout layouts={spotifyLayouts} className='-mt-8 pb-16'>
                     {[1, 2, 3, 4, 5].map((i) => (
                         <div key={`spotify-${i}`}>
-                            <Card className='bg-gray-300 animate-pulse' />
+                            <Card className='bg-gray-300 animate-pulse'>
+                                <div className='w-full h-full' />
+                            </Card>
                         </div>
                     ))}
                 </GridLayout>
