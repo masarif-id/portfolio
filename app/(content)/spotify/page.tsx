@@ -65,23 +65,6 @@ export default function SpotifyPage() {
                                     <p className='text-lg font-medium text-gray-800 dark:text-gray-200'>{data?.artist}</p>
                                     <p className='text-gray-600 dark:text-gray-400'>{data?.album}</p>
                                 </div>
-                                
-                                {/* Playing Status */}
-                                <div className='flex items-center gap-3 py-4'>
-                                    {data?.isPlaying && (
-                                        <div className='inline-flex items-center justify-center gap-1'>
-                                            <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                            <div className='w-1 h-4 animate-[playing_0.62s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                            <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                            <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                            <div className='w-1 h-4 animate-[playing_0.49s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                            <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                        </div>
-                                    )}
-                                    <p className='text-[#1DB954] font-medium'>
-                                        {data?.isPlaying ? 'Now Playing' : 'Offline'}
-                                    </p>
-                                </div>
 
                                 {/* Spotify Links */}
                                 <div className='flex flex-wrap items-center gap-3 pt-4'>
