@@ -43,6 +43,9 @@ export default function SpotifyPage() {
     if (error) return <ErrorDisplay />;
     if (isLoading) return <Loading />;
 
+    // Dynamic title based on playing status
+    const pageTitle = data?.isPlaying ? 'Now Playing' : 'Recently Played';
+
     return (
         <>
             <header className='flex items-center justify-center pt-10'>
@@ -53,7 +56,7 @@ export default function SpotifyPage() {
             </header>
             <main>
                 <Container as='article' className='py-8'>
-                    <h1 className='font-pixelify-sans text-3xl leading-relaxed mb-4'>Now Playing</h1>
+                    <h1 className='font-pixelify-sans text-3xl leading-relaxed mb-4'>{pageTitle}</h1>
                     <div className='grid grid-cols-2 gap-10 pb-8 max-md:grid-cols-1'>
                         <div>
                             <p className='text-xl leading-relaxed font-medium mb-4'>
@@ -193,7 +196,7 @@ export default function SpotifyPage() {
                                 )}
                             </div>
                             <p className='text-sm font-medium text-center text-[#1DB954]'>
-                                {data?.isPlaying ? 'Now Playing' : 'Last Played'}
+                                {data?.isPlaying ? 'Now Playing' : 'Recently Played'}
                             </p>
                         </Card>
                     </div>
