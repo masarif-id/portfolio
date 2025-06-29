@@ -132,9 +132,7 @@ export default function SpotifyPage() {
                             {data?.artistInfo ? (
                                 <div className='space-y-3'>
                                     <div className='flex items-center gap-3'>
-                                        <div className='w-12 h-12 rounded-full bg-[#1DB954] flex items-center justify-center'>
-                                            <FaSpotify className='text-white' size='1.5rem' />
-                                        </div>
+                                        <FaSpotify className='text-[#1DB954]' size='3rem' />
                                         <div>
                                             <h3 className='font-pixelify-sans text-lg line-clamp-1'>{data.artistInfo.name}</h3>
                                             <p className='text-sm text-gray-600 dark:text-gray-400'>
@@ -157,9 +155,7 @@ export default function SpotifyPage() {
                             ) : (
                                 <div className='space-y-3'>
                                     <div className='flex items-center gap-3'>
-                                        <div className='w-12 h-12 rounded-full bg-gray-300 dark:bg-dark-700 flex items-center justify-center'>
-                                            <FaSpotify className='text-gray-600 dark:text-gray-400' size='1.5rem' />
-                                        </div>
+                                        <FaSpotify className='text-[#1DB954]' size='3rem' />
                                         <div>
                                             <h3 className='font-pixelify-sans text-lg line-clamp-2'>{data?.artist}</h3>
                                             <p className='text-sm text-gray-600 dark:text-gray-400'>Artist information unavailable</p>
@@ -217,10 +213,8 @@ export default function SpotifyPage() {
                                 </>
                             ) : (
                                 <>
-                                    <div className='w-16 h-16 bg-gray-300 dark:bg-dark-700 rounded-full mb-3 flex items-center justify-center'>
-                                        <FaSpotify className='text-gray-600 dark:text-gray-400' size='2rem' />
-                                    </div>
-                                    <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>No artist data</p>
+                                    <FaSpotify className='text-[#1DB954]' size='2rem' />
+                                    <p className='text-sm text-gray-600 dark:text-gray-400 text-center mt-3'>No artist data</p>
                                 </>
                             )}
                         </Card>
