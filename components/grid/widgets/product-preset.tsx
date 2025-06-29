@@ -6,7 +6,7 @@ export default function ProductPreset() {
     return (
         <Card className='relative flex h-full flex-col items-center justify-center' style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
             <div className='absolute bottom-3 left-3'>
-                <Anchor className='cancel-drag' href='https://store.masarif.id/preset' target='_blank'>
+                <Anchor className='cancel-drag' href='/products/preset'>
                     <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                     <span className='sr-only'>Lightroom Preset</span>
                 </Anchor>
