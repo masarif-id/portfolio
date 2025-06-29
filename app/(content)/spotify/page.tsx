@@ -95,12 +95,8 @@ export default function SpotifyPage() {
                         </div>
                         <div className='prose dark:prose-invert'>
                             <p>
-                                Hahaha This shows my current or most recently played track from Spotify with detailed artist information. 
+                                This shows my current or most recently played track from Spotify with detailed artist information. 
                                 The data is fetched in real-time from the Spotify API and updates automatically.
-                            </p>
-                            <p>
-                                You can explore the artist&apos;s profile, see their popularity metrics, genres, and follower count 
-                                to discover more about the music I&apos;m listening to.
                             </p>
                         </div>
                     </div>
