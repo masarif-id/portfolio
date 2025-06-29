@@ -87,7 +87,7 @@ function CardFooter({ isPlaying }: Readonly<{ isPlaying?: boolean }>) {
                     <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
                 </div>
             )}
-            <p className='text-sm'>{isPlaying ? 'Now Playing' : 'Offline. Last Played'}</p>
+            <p className='text-sm'>{isPlaying ? 'Arif is listening' : 'Arif recently played'}</p>
         </div>
     );
 }
