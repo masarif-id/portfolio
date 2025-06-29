@@ -29,27 +29,6 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Features
-
-- **Responsive Grid Layout**: Interactive grid system using react-grid-layout
-- **Dark/Light Theme**: Theme switching with next-themes
-- **MDX Support**: Blog posts and projects with MDX
-- **Spotify Integration**: Real-time now playing display
-- **Interactive Map**: Location display with Mapbox
-- **SEO Optimized**: Complete metadata and structured data
-- **Product Pages**: Lightroom presets and video LUTs showcase
-
-## Tech Stack
-
-- **Framework**: Next.js 15
-- **Styling**: Tailwind CSS v4
-- **Content**: MDX with next-mdx-remote
-- **Grid**: react-grid-layout
-- **Icons**: React Icons
-- **Analytics**: Vercel Analytics
-- **Maps**: Mapbox GL JS
-- **Theme**: next-themes
-
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
@@ -64,8 +43,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
-## License
-
-This project is based on the original work by [bymaul](https://github.com/bymaul/portfolio). 
-Please refer to the original repository for licensing information.
