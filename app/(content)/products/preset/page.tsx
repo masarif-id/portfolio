@@ -84,7 +84,7 @@ export default function PresetPage() {
                 {/* Features Section */}
                 <Container className='py-16'>
                     <div className='text-center mb-12'>
-                        <h2 className='font-pixelify-sans text-3xl mb-4'>What's Included</h2>
+                        <h2 className='font-pixelify-sans text-3xl mb-4'>What&apos;s Included</h2>
                         <p className='text-gray-600 dark:text-gray-300 max-w-2xl mx-auto'>
                             Each preset pack comes with everything you need to elevate your photography
                         </p>
