@@ -4,6 +4,7 @@ import { cn } from '@/utils/lib';
 import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import { ThemeProvider } from './providers';
+import Footer from '@/components/ui/footer';
 
 import './globals.css';
 
@@ -119,7 +120,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </head>
             <body className={cn(museoSans.className, museoSans.variable, 'dark:bg-dark-950 bg-gray-100 antialiased')}>
                 <ThemeProvider attribute='class' enableSystem={false}>
-                    {children}
+                    <div className='min-h-screen flex flex-col'>
+                        <div className='flex-1'>
+                            {children}
+                        </div>
+                        <Footer />
+                    </div>
                 </ThemeProvider>
                 <Analytics />
             </body>
