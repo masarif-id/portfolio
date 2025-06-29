@@ -2,7 +2,7 @@
 
 Personal portfolio website for Arif (@masarif.id) - A visual storyteller from Central Java, Indonesia. Features photography gallery, blog posts, Spotify integration, and product showcase. Built with Next.js 15.
 
-## 🚀 Features
+## Features
 
 - **Dynamic Grid Layout** - Interactive and responsive grid system using React Grid Layout
 - **Spotify Integration** - Real-time display of currently playing or recently played tracks
@@ -27,7 +27,7 @@ Personal portfolio website for Arif (@masarif.id) - A visual storyteller from Ce
 - **Theme:** next-themes
 - **Analytics:** Vercel Analytics
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -35,7 +35,7 @@ Before you begin, ensure you have the following installed:
 - **npm**, **yarn**, or **pnpm** package manager
 - **Git** for version control
 
-## 🔧 Installation
+## Installation
 
 ### 1. Clone the Repository
 
@@ -102,7 +102,7 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── app/                          # Next.js App Router
@@ -139,7 +139,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the r
     └── mdx.ts                   # MDX processing
 ```
 
-## ✏️ Content Management
+## Content Management
 
 ### Adding Blog Posts
 
@@ -180,7 +180,7 @@ Edit `config/grid.ts` to modify the grid layout:
 - Update `gridItems` array to include new components
 - Modify `layouts` object for different breakpoints
 
-## 🎨 Customization
+## Customization
 
 ### Site Configuration
 
@@ -217,7 +217,7 @@ const socials: Social[] = [
 - Tailwind configuration: Uses Tailwind CSS v4 with custom color palette
 - Component styles: Inline with Tailwind classes
 
-## 🚀 Deployment
+## Deployment
 
 ### Deploy to Vercel (Recommended)
 
@@ -242,15 +242,8 @@ The project can be deployed to any platform that supports Next.js:
 - **DigitalOcean App Platform**
 - **AWS Amplify**
 
-## 📊 Performance
 
-- **Lighthouse Score:** 95+ on all metrics
-- **Core Web Vitals:** Optimized for LCP, FID, and CLS
-- **Image Optimization:** Next.js Image component with WebP support
-- **Font Optimization:** Local fonts with display swap
-- **Bundle Size:** Optimized with tree shaking and code splitting
-
-## 🔧 Scripts
+## Scripts
 
 ```bash
 # Development
@@ -264,7 +257,7 @@ npm run start        # Start production server
 npm run lint         # Run ESLint
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -290,19 +283,18 @@ If you encounter issues:
 1. Check the [Next.js documentation](https://nextjs.org/docs)
 2. Review [Tailwind CSS documentation](https://tailwindcss.com/docs)
 3. Open an issue on GitHub
-4. Contact: halo@masarif.id
 
-## 📄 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE).
 
-## 🙏 Credits
+## Credits
 
 This project is based on the original portfolio template by [bymaul](https://github.com/bymaul/portfolio).
 
 **Original Repository:** https://github.com/bymaul/portfolio
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
