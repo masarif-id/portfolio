@@ -45,6 +45,11 @@ export default function SpotifyPage() {
 
     // Dynamic title based on playing status
     const pageTitle = data?.isPlaying ? 'Now Playing' : 'Recently Played';
+    
+    // Dynamic description based on playing status
+    const description = data?.isPlaying 
+        ? 'Arif is currently listening to on Spotify' 
+        : 'Arif recently played on Spotify';
 
     return (
         <>
@@ -60,7 +65,7 @@ export default function SpotifyPage() {
                     <div className='grid grid-cols-2 gap-10 pb-8 max-md:grid-cols-1'>
                         <div>
                             <p className='text-xl leading-relaxed font-medium mb-4'>
-                                {data?.isPlaying ? 'Currently listening to' : 'Last played track'} on Spotify
+                                {description}
                             </p>
                             <div className='space-y-3'>
                                 <div>
