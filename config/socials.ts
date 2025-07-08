@@ -15,7 +15,7 @@ const socials: Social[] = [
     },
     {
         name: 'Github',
-        url: 'https://github.com/homearif6',
+        url: 'https://github.com/masarif-id',
         icon: FaGithub,
     },
     {
