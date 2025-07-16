@@ -4,6 +4,7 @@ import { cn } from '@/utils/lib';
 import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import { ThemeProvider } from './providers';
+import RealTimeTracker from '@/components/analytics/real-time-tracker';
 
 import './globals.css';
 
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <body className={cn(museoSans.className, museoSans.variable, 'dark:bg-dark-950 bg-gray-100 antialiased')}>
                 <ThemeProvider attribute='class' enableSystem={false}>
                     {children}
+                    <RealTimeTracker />
                 </ThemeProvider>
                 <Analytics />
             </body>
