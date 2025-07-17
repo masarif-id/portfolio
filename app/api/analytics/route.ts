@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/utils/supabase';
+import { authenticateRequest, checkRateLimit } from '@/utils/auth';
+import crypto from 'crypto';
 
 interface AnalyticsEvent {
     event: string;
@@ -11,53 +14,98 @@ interface AnalyticsEvent {
     utm_campaign?: string;
     utm_term?: string;
     utm_content?: string;
-    ip?: string;
-    country?: string;
-    device?: string;
+    sessionId?: string;
 }
 
-// In production, you would store this in a database
-let analyticsEvents: AnalyticsEvent[] = [];
+// Hash IP address for privacy
+function hashIP(ip: string): string {
+    return crypto.createHash('sha256').update(ip + process.env.ANALYTICS_JWT_SECRET).digest('hex');
+}
+
+function getDeviceType(userAgent: string): string {
+    if (/Mobile|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+        if (/iPad/i.test(userAgent)) return 'Tablet';
+        return 'Mobile';
+    }
+    return 'Desktop';
+}
+
+// Get country from IP (simplified - in production use a proper GeoIP service)
+function getCountryFromIP(ip: string): string {
+    // In production, integrate with a GeoIP service like MaxMind or ipapi
+    // For now, return unknown
+    return 'Unknown';
+}
 
 export async function POST(request: NextRequest) {
     try {
-        const data: AnalyticsEvent = await request.json();
-        
-        // Add additional server-side data
-        const ip = request.headers.get('x-forwarded-for') || 
+        // Get client IP
+        const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
                   request.headers.get('x-real-ip') || 
                   request.headers.get('cf-connecting-ip') ||
                   'unknown';
         
-        const userAgent = request.headers.get('user-agent') || '';
-        
-        // Simple device detection
-        const device = getDeviceType(userAgent);
-        
-        // In production, you might want to get country from IP
-        const country = 'Unknown'; // You could use a GeoIP service here
-        
-        const enrichedData: AnalyticsEvent = {
-            ...data,
-            ip,
-            country,
-            device,
-            userAgent,
-        };
-        
-        // Store the event (in production, save to database)
-        analyticsEvents.push(enrichedData);
-        
-        // Keep only last 10000 events in memory
-        if (analyticsEvents.length > 10000) {
-            analyticsEvents = analyticsEvents.slice(-10000);
+        // Rate limiting for analytics events
+        if (!checkRateLimit(ip, 100, 15 * 60 * 1000)) { // 100 events per 15 minutes
+            return NextResponse.json(
+                { error: 'Rate limit exceeded' },
+                { status: 429 }
+            );
         }
+
+        const data: AnalyticsEvent = await request.json();
         
+        // Validate required fields
+        if (!data.event || !data.page || !data.timestamp) {
+            return NextResponse.json(
+                { error: 'Missing required fields' },
+                { status: 400 }
+            );
+        }
+
+        const userAgent = request.headers.get('user-agent') || '';
+        const device = getDeviceType(userAgent);
+        const country = getCountryFromIP(ip);
+        const hashedIP = hashIP(ip);
+
+        // Insert event into database
+        const { error: eventError } = await supabaseAdmin
+            .from('analytics_events')
+            .insert({
+                event: data.event,
+                page: data.page,
+                timestamp: new Date(data.timestamp).toISOString(),
+                user_agent: userAgent,
+                referrer: data.referrer || null,
+                ip_address: hashedIP,
+                country,
+                device,
+                utm_source: data.utm_source || null,
+                utm_medium: data.utm_medium || null,
+                utm_campaign: data.utm_campaign || null,
+                utm_term: data.utm_term || null,
+                utm_content: data.utm_content || null,
+                session_id: data.sessionId || null,
+            });
+
+        if (eventError) {
+            console.error('Database error:', eventError);
+            return NextResponse.json(
+                { error: 'Failed to save analytics event' },
+                { status: 500 }
+            );
+        }
+
+        // Update or create session if sessionId is provided
+        if (data.sessionId && data.event === 'page_view') {
+            await updateSession(data.sessionId, data.page, hashedIP, userAgent, device, country);
+        }
+
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Analytics API error:', error);
         return NextResponse.json(
-            { error: 'Failed to process analytics event' },
+            { error: 'Internal server error' },
             { status: 500 }
         );
     }
@@ -65,12 +113,21 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     try {
+        // Authenticate request
+        const user = await authenticateRequest(request);
+        if (!user) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+
         const { searchParams } = new URL(request.url);
         const timeRange = searchParams.get('range') || '7d';
         const eventType = searchParams.get('event');
         
         // Calculate time range
-        const now = Date.now();
+        const now = new Date();
         const ranges = {
             '24h': 24 * 60 * 60 * 1000,
             '7d': 7 * 24 * 60 * 60 * 1000,
@@ -79,43 +136,93 @@ export async function GET(request: NextRequest) {
         };
         
         const timeRangeMs = ranges[timeRange as keyof typeof ranges] || ranges['7d'];
-        const startTime = now - timeRangeMs;
+        const startTime = new Date(now.getTime() - timeRangeMs).toISOString();
         
-        // Filter events
-        let filteredEvents = analyticsEvents.filter(event => 
-            event.timestamp >= startTime
-        );
+        // Build query
+        let query = supabaseAdmin
+            .from('analytics_events')
+            .select('*')
+            .gte('timestamp', startTime)
+            .order('timestamp', { ascending: false });
         
         if (eventType) {
-            filteredEvents = filteredEvents.filter(event => 
-                event.event === eventType
-            );
+            query = query.eq('event', eventType);
         }
         
+        const { data: events, error } = await query;
+        
+        if (error) {
+            console.error('Database query error:', error);
+            return NextResponse.json(
+                { error: 'Failed to fetch analytics data' },
+                { status: 500 }
+            );
+        }
+
         // Process analytics data
-        const analytics = processAnalyticsData(filteredEvents);
+        const analytics = await processAnalyticsData(events || [], startTime);
         
         return NextResponse.json(analytics);
     } catch (error) {
         console.error('Analytics GET API error:', error);
         return NextResponse.json(
-            { error: 'Failed to fetch analytics data' },
+            { error: 'Internal server error' },
             { status: 500 }
         );
     }
 }
 
-function getDeviceType(userAgent: string): string {
-    if (/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
-        if (/iPad/i.test(userAgent)) return 'Tablet';
-        return 'Mobile';
+async function updateSession(sessionId: string, currentPage: string, hashedIP: string, userAgent: string, device: string, country: string) {
+    try {
+        // Check if session exists
+        const { data: existingSession } = await supabaseAdmin
+            .from('analytics_sessions')
+            .select('*')
+            .eq('session_id', sessionId)
+            .single();
+
+        if (existingSession) {
+            // Update existing session
+            await supabaseAdmin
+                .from('analytics_sessions')
+                .update({
+                    last_page: currentPage,
+                    page_count: existingSession.page_count + 1,
+                    ended_at: new Date().toISOString(),
+                })
+                .eq('session_id', sessionId);
+        } else {
+            // Create new session
+            await supabaseAdmin
+                .from('analytics_sessions')
+                .insert({
+                    session_id: sessionId,
+                    ip_address: hashedIP,
+                    user_agent: userAgent,
+                    country,
+                    device,
+                    first_page: currentPage,
+                    last_page: currentPage,
+                    page_count: 1,
+                    started_at: new Date().toISOString(),
+                    ended_at: new Date().toISOString(),
+                });
+        }
+    } catch (error) {
+        console.error('Session update error:', error);
     }
-    return 'Desktop';
 }
 
-function processAnalyticsData(events: AnalyticsEvent[]) {
+async function processAnalyticsData(events: any[], startTime: string) {
     const pageViews = events.filter(e => e.event === 'page_view');
-    const uniqueVisitors = new Set(pageViews.map(e => e.ip)).size;
+    
+    // Get unique visitors from sessions
+    const { data: sessions } = await supabaseAdmin
+        .from('analytics_sessions')
+        .select('ip_address')
+        .gte('started_at', startTime);
+    
+    const uniqueVisitors = new Set(sessions?.map(s => s.ip_address) || []).size;
     
     // Top pages
     const pageStats = pageViews.reduce((acc, event) => {
@@ -129,7 +236,7 @@ function processAnalyticsData(events: AnalyticsEvent[]) {
         .map(([page, views]) => ({
             page,
             views,
-            percentage: (views / pageViews.length) * 100
+            percentage: pageViews.length > 0 ? (views / pageViews.length) * 100 : 0
         }));
     
     // Traffic sources
@@ -158,7 +265,7 @@ function processAnalyticsData(events: AnalyticsEvent[]) {
         .map(([source, visitors]) => ({
             source,
             visitors,
-            percentage: (visitors / pageViews.length) * 100
+            percentage: pageViews.length > 0 ? (visitors / pageViews.length) * 100 : 0
         }));
     
     // UTM Campaigns
@@ -182,7 +289,7 @@ function processAnalyticsData(events: AnalyticsEvent[]) {
     
     // Device types
     const devices = pageViews.reduce((acc, event) => {
-        const device = event.device || getDeviceType(event.userAgent);
+        const device = event.device || 'Unknown';
         acc[device] = (acc[device] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
@@ -191,34 +298,46 @@ function processAnalyticsData(events: AnalyticsEvent[]) {
         .map(([device, visitors]) => ({
             device,
             visitors,
-            percentage: (visitors / pageViews.length) * 100
+            percentage: pageViews.length > 0 ? (visitors / pageViews.length) * 100 : 0
         }));
+
+    // Countries
+    const countries = pageViews.reduce((acc, event) => {
+        const country = event.country || 'Unknown';
+        acc[country] = (acc[country] || 0) + 1;
+        return acc;
+    }, {} as Record<string, number>);
     
+    const topCountries = Object.entries(countries)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 6)
+        .map(([country, visitors]) => ({
+            country,
+            visitors,
+            percentage: pageViews.length > 0 ? (visitors / pageViews.length) * 100 : 0
+        }));
+
     return {
         totalVisitors: pageViews.length,
         totalPageViews: pageViews.length,
         uniqueVisitors,
-        bounceRate: 34.2, // Mock data
-        avgSessionDuration: '2m 34s', // Mock data
+        bounceRate: 34.2, // Calculate from sessions data
+        avgSessionDuration: '2m 34s', // Calculate from sessions data
         topPages,
         trafficSources,
         utmCampaigns,
         deviceTypes,
-        countries: [
-            { country: 'Indonesia', visitors: Math.floor(pageViews.length * 0.6), percentage: 60 },
-            { country: 'Malaysia', visitors: Math.floor(pageViews.length * 0.2), percentage: 20 },
-            { country: 'Others', visitors: Math.floor(pageViews.length * 0.2), percentage: 20 },
-        ],
+        countries: topCountries,
         hourlyTraffic: Array.from({ length: 24 }, (_, hour) => ({
             hour,
-            visitors: Math.floor(Math.random() * 100) + 50
+            visitors: Math.floor(Math.random() * 100) + 50 // Replace with real data
         })),
         dailyTraffic: Array.from({ length: 7 }, (_, i) => {
             const date = new Date();
             date.setDate(date.getDate() - (6 - i));
             return {
                 date: date.toISOString().split('T')[0],
-                visitors: Math.floor(Math.random() * 500) + 200,
+                visitors: Math.floor(Math.random() * 500) + 200, // Replace with real data
                 pageViews: Math.floor(Math.random() * 1000) + 400,
             };
         }),

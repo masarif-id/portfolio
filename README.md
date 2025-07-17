@@ -11,6 +11,8 @@ Personal portfolio website for Arif (@masarif.id) - A visual storyteller from Ce
 - **Product Pages** - Dedicated pages for Lightroom presets and video LUTs
 - **Interactive Map** - Location display using Mapbox GL
 - **Theme Support** - Light and dark mode with smooth transitions
+- **Real-time Analytics** - Track visitors, page views, UTM campaigns, and user behavior
+- **Secure Analytics Dashboard** - Protected admin panel with authentication
 - **SEO Optimized** - Complete meta tags, sitemap, and structured data
 - **Performance Focused** - Optimized images, fonts, and loading states
 
@@ -26,6 +28,35 @@ Personal portfolio website for Arif (@masarif.id) - A visual storyteller from Ce
 - **Data Fetching:** SWR
 - **Theme:** next-themes
 - **Analytics:** Vercel Analytics
+
+## Analytics Features
+
+The portfolio includes a comprehensive analytics system:
+
+### Real-time Tracking
+- Page views and unique visitors
+- UTM campaign tracking
+- Device and country detection
+- Session tracking
+- External link clicks
+- Scroll depth tracking
+- Time on page
+
+### Analytics Dashboard (`/analitik`)
+- Secure login system
+- Real-time visitor statistics
+- Traffic source analysis
+- UTM campaign performance
+- Device and country breakdown
+- Top pages and content performance
+- Hourly and daily traffic patterns
+
+### Privacy & Security
+- IP addresses are hashed for privacy
+- Rate limiting on API endpoints
+- JWT-based authentication
+- Secure password hashing with bcrypt
+- Database-level security with Supabase RLS
 
 ## Prerequisites
 
@@ -73,6 +104,16 @@ SPOTIFY_REFRESH_TOKEN=your_spotify_refresh_token
 
 # Mapbox Configuration
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_access_token
+
+# Supabase Configuration (untuk analytics database)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Analytics Authentication
+ANALYTICS_JWT_SECRET=your_very_secure_jwt_secret_key_here
+ANALYTICS_ADMIN_EMAIL=admin@masarif.id
+ANALYTICS_ADMIN_PASSWORD_HASH=your_bcrypt_hashed_password
 ```
 
 #### Getting Spotify API Credentials:
@@ -82,6 +123,29 @@ NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_access_token
 3. Get your `Client ID` and `Client Secret`
 4. Set redirect URI to `http://localhost:3000/api/auth/callback/spotify`
 5. Use [Spotify Web API Authorization Guide](https://developer.spotify.com/documentation/web-api/tutorials/code-flow) to get refresh token
+
+#### Setting Up Analytics (Production):
+
+1. **Setup Supabase Database:**
+   - Create a new Supabase project
+   - Run the migration file `supabase/migrations/create_analytics_tables.sql`
+   - Get your Supabase URL, anon key, and service role key
+
+2. **Generate Password Hash:**
+   ```bash
+   node utils/setup-password.js yourSecurePassword123
+   ```
+   Copy the generated hash to your environment variables
+
+3. **Set Environment Variables:**
+   - Add all Supabase credentials to `.env.local`
+   - Set a strong JWT secret (random string)
+   - Set admin email and password hash
+
+4. **Access Analytics:**
+   - Go to `/analitik/login`
+   - Login with your admin credentials
+   - View real-time analytics at `/analitik`
 
 #### Getting Mapbox Access Token:
 

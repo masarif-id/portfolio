@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface AnalyticsEvent {
     event: string;
@@ -13,10 +13,35 @@ interface AnalyticsEvent {
     utm_campaign?: string;
     utm_term?: string;
     utm_content?: string;
+    sessionId?: string;
+}
+
+// Generate session ID
+function generateSessionId(): string {
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+// Get or create session ID
+function getSessionId(): string {
+    let sessionId = sessionStorage.getItem('analytics_session_id');
+    if (!sessionId) {
+        sessionId = generateSessionId();
+        sessionStorage.setItem('analytics_session_id', sessionId);
+    }
+    return sessionId;
 }
 
 export default function RealTimeTracker() {
+    const [sessionId] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return getSessionId();
+        }
+        return '';
+    });
+
     useEffect(() => {
+        if (!sessionId) return;
+
         // Track page view
         const trackPageView = () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -32,6 +57,7 @@ export default function RealTimeTracker() {
                 utm_campaign: urlParams.get('utm_campaign') || undefined,
                 utm_term: urlParams.get('utm_term') || undefined,
                 utm_content: urlParams.get('utm_content') || undefined,
+                sessionId,
             };
 
             // Send to analytics endpoint
@@ -51,6 +77,7 @@ export default function RealTimeTracker() {
                         timestamp: Date.now(),
                         userAgent: navigator.userAgent,
                         referrer: link.href,
+                        sessionId,
                     };
                     
                     sendAnalyticsEvent(analyticsData);
@@ -80,6 +107,7 @@ export default function RealTimeTracker() {
                                 timestamp: Date.now(),
                                 userAgent: navigator.userAgent,
                                 referrer: `${maxScroll}%`,
+                                sessionId,
                             };
                             
                             sendAnalyticsEvent(analyticsData);
@@ -110,6 +138,7 @@ export default function RealTimeTracker() {
                         timestamp: Date.now(),
                         userAgent: navigator.userAgent,
                         referrer: `${Math.round(timeSpent / 1000)}s`,
+                        sessionId,
                     };
                     
                     sendAnalyticsEvent(analyticsData);
@@ -133,34 +162,19 @@ export default function RealTimeTracker() {
             cleanupScroll();
             cleanupTime();
         };
-    }, []);
+    }, [sessionId]);
 
     return null; // This component doesn't render anything
 }
 
 async function sendAnalyticsEvent(data: AnalyticsEvent) {
     try {
-        // In a real implementation, you would send this to your analytics API
-        // For now, we'll just log it to console and store in localStorage for demo
-        console.log('Analytics Event:', data);
-        
-        // Store in localStorage for demo purposes
-        const existingEvents = JSON.parse(localStorage.getItem('analytics_events') || '[]');
-        existingEvents.push(data);
-        
-        // Keep only last 1000 events
-        if (existingEvents.length > 1000) {
-            existingEvents.splice(0, existingEvents.length - 1000);
-        }
-        
-        localStorage.setItem('analytics_events', JSON.stringify(existingEvents));
-        
-        // In production, you would send to your analytics API:
-        // await fetch('/api/analytics', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(data),
-        // });
+        // Send to analytics API
+        await fetch('/api/analytics', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
     } catch (error) {
         console.error('Failed to send analytics event:', error);
     }

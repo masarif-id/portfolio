@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Container from '@/components/ui/container';
 import Card from '@/components/ui/card';
 import { 
@@ -17,6 +18,11 @@ import {
     FaCalendarDay
 } from 'react-icons/fa6';
 
+interface AuthUser {
+    email: string;
+    role: 'admin';
+}
+
 interface AnalyticsData {
     totalVisitors: number;
     totalPageViews: number;
@@ -32,94 +38,99 @@ interface AnalyticsData {
     dailyTraffic: Array<{ date: string; visitors: number; pageViews: number }>;
 }
 
-// Mock data - dalam implementasi nyata, ini akan diambil dari API analytics
-const mockAnalyticsData: AnalyticsData = {
-    totalVisitors: 12847,
-    totalPageViews: 28394,
-    uniqueVisitors: 9234,
-    bounceRate: 34.2,
-    avgSessionDuration: '2m 34s',
-    topPages: [
-        { page: '/', views: 8234, percentage: 29.0 },
-        { page: '/projects/gallery', views: 4521, percentage: 15.9 },
-        { page: '/spotify', views: 3892, percentage: 13.7 },
-        { page: '/posts/about-arif', views: 2847, percentage: 10.0 },
-        { page: '/products/preset', views: 2156, percentage: 7.6 },
-        { page: '/products/lut', views: 1834, percentage: 6.5 },
-    ],
-    trafficSources: [
-        { source: 'Direct', visitors: 4521, percentage: 35.2 },
-        { source: 'Google Search', visitors: 3847, percentage: 29.9 },
-        { source: 'Instagram', visitors: 2156, percentage: 16.8 },
-        { source: 'YouTube', visitors: 1234, percentage: 9.6 },
-        { source: 'LinkedIn', visitors: 789, percentage: 6.1 },
-        { source: 'Other', visitors: 300, percentage: 2.4 },
-    ],
-    utmCampaigns: [
-        { campaign: 'instagram_story', visitors: 1847, conversions: 234 },
-        { campaign: 'youtube_description', visitors: 1234, conversions: 156 },
-        { campaign: 'linkedin_post', visitors: 789, conversions: 89 },
-        { campaign: 'email_newsletter', visitors: 567, conversions: 78 },
-        { campaign: 'facebook_ad', visitors: 345, conversions: 45 },
-    ],
-    deviceTypes: [
-        { device: 'Mobile', percentage: 68.4, visitors: 8787 },
-        { device: 'Desktop', percentage: 24.7, visitors: 3173 },
-        { device: 'Tablet', percentage: 6.9, visitors: 887 },
-    ],
-    countries: [
-        { country: 'Indonesia', visitors: 7234, percentage: 56.3 },
-        { country: 'Malaysia', visitors: 1847, percentage: 14.4 },
-        { country: 'Singapore', visitors: 1234, percentage: 9.6 },
-        { country: 'United States', visitors: 987, percentage: 7.7 },
-        { country: 'Australia', visitors: 654, percentage: 5.1 },
-        { country: 'Others', visitors: 891, percentage: 6.9 },
-    ],
-    hourlyTraffic: [
-        { hour: 0, visitors: 234 }, { hour: 1, visitors: 156 }, { hour: 2, visitors: 123 },
-        { hour: 3, visitors: 89 }, { hour: 4, visitors: 67 }, { hour: 5, visitors: 98 },
-        { hour: 6, visitors: 234 }, { hour: 7, visitors: 456 }, { hour: 8, visitors: 678 },
-        { hour: 9, visitors: 789 }, { hour: 10, visitors: 834 }, { hour: 11, visitors: 923 },
-        { hour: 12, visitors: 1045 }, { hour: 13, visitors: 1123 }, { hour: 14, visitors: 1234 },
-        { hour: 15, visitors: 1345 }, { hour: 16, visitors: 1456 }, { hour: 17, visitors: 1234 },
-        { hour: 18, visitors: 1123 }, { hour: 19, visitors: 1045 }, { hour: 20, visitors: 934 },
-        { hour: 21, visitors: 823 }, { hour: 22, visitors: 678 }, { hour: 23, visitors: 456 },
-    ],
-    dailyTraffic: [
-        { date: '2025-01-01', visitors: 456, pageViews: 1234 },
-        { date: '2025-01-02', visitors: 523, pageViews: 1456 },
-        { date: '2025-01-03', visitors: 634, pageViews: 1678 },
-        { date: '2025-01-04', visitors: 789, pageViews: 1890 },
-        { date: '2025-01-05', visitors: 845, pageViews: 2123 },
-        { date: '2025-01-06', visitors: 923, pageViews: 2345 },
-        { date: '2025-01-07', visitors: 1045, pageViews: 2567 },
-    ],
-};
-
 export default function AnalyticsPage() {
+    const router = useRouter();
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState<AuthUser | null>(null);
     const [timeRange, setTimeRange] = useState('7d');
+    const [error, setError] = useState<string | null>(null);
+
+    // Check authentication
+    const checkAuth = useCallback(async () => {
+        const token = localStorage.getItem('analytics-token');
+        if (!token) {
+            router.push('/analitik/login');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/analytics', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (response.status === 401) {
+                localStorage.removeItem('analytics-token');
+                router.push('/analitik/login');
+                return;
+            }
+
+            setIsAuthenticated(true);
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            router.push('/analitik/login');
+        }
+    }, [router]);
+
+    // Fetch analytics data
+    const fetchAnalytics = useCallback(async () => {
+        if (!isAuthenticated) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const token = localStorage.getItem('analytics-token');
+            const response = await fetch(`/api/analytics?range=${timeRange}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch analytics data');
+            }
+
+            const analyticsData = await response.json();
+            setData(analyticsData);
+        } catch (error) {
+            console.error('Failed to fetch analytics:', error);
+            setError('Failed to load analytics data');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [isAuthenticated, timeRange]);
+
+    // Logout function
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            localStorage.removeItem('analytics-token');
+            router.push('/analitik/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
 
     useEffect(() => {
-        // Simulate API call
-        const fetchAnalytics = async () => {
-            setIsLoading(true);
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setData(mockAnalyticsData);
-            setIsLoading(false);
-        };
+        checkAuth();
+    }, [checkAuth]);
 
-        fetchAnalytics();
-    }, [timeRange]);
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchAnalytics();
+        }
+    }, [fetchAnalytics]);
 
-    if (isLoading) {
+    if (!isAuthenticated || isLoading) {
         return <LoadingState />;
     }
 
-    if (!data) {
-        return <ErrorState />;
+    if (error || !data) {
+        return <ErrorState error={error} onRetry={fetchAnalytics} />;
     }
 
     return (
@@ -127,7 +138,14 @@ export default function AnalyticsPage() {
             <Container className="py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="font-pixelify-sans text-4xl mb-4">Analytics Dashboard</h1>
+                    <div className="flex items-center justify-between mb-4">
+                        <h1 className="font-pixelify-sans text-4xl">Analytics Dashboard</h1>
+                        <button
+                            onClick={handleLogout}
+                            className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                            Logout
+                        </button>
+                    </div>
                     <p className="text-gray-600 dark:text-gray-400 mb-6">
                         Comprehensive analytics for masarif.id
                     </p>
@@ -417,17 +435,17 @@ function LoadingState() {
     );
 }
 
-function ErrorState() {
+function ErrorState({ error, onRetry }: { error: string | null; onRetry: () => void }) {
     return (
         <main className="min-h-screen bg-gray-50 dark:bg-dark-950">
             <Container className="py-8">
                 <Card className="p-12 text-center">
                     <h2 className="font-pixelify-sans text-2xl mb-4">Failed to Load Analytics</h2>
                     <p className="text-gray-600 dark:text-gray-400 mb-6">
-                        Unable to fetch analytics data. Please try again later.
+                        {error || 'Unable to fetch analytics data. Please try again later.'}
                     </p>
                     <button
-                        onClick={() => window.location.reload()}
+                        onClick={onRetry}
                         className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                         Retry
                     </button>
