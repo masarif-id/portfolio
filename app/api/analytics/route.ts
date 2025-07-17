@@ -231,11 +231,11 @@ async function processAnalyticsData(events: any[], startTime: string) {
     }, {} as Record<string, number>);
     
     const topPages = Object.entries(pageStats)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([,a], [,b]) => (b as number) - (a as number))
         .slice(0, 10)
         .map(([page, views]) => ({
             page,
-            views,
+            views: views as number,
             percentage: pageViews.length > 0 ? (views / pageViews.length) * 100 : 0
         }));
     
@@ -261,10 +261,10 @@ async function processAnalyticsData(events: any[], startTime: string) {
     }, {} as Record<string, number>);
     
     const trafficSources = Object.entries(sources)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([,a], [,b]) => (b as number) - (a as number))
         .map(([source, visitors]) => ({
             source,
-            visitors,
+            visitors: visitors as number,
             percentage: pageViews.length > 0 ? (visitors / pageViews.length) * 100 : 0
         }));
     
@@ -309,11 +309,11 @@ async function processAnalyticsData(events: any[], startTime: string) {
     }, {} as Record<string, number>);
     
     const topCountries = Object.entries(countries)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([,a], [,b]) => (b as number) - (a as number))
         .slice(0, 6)
         .map(([country, visitors]) => ({
             country,
-            visitors,
+            visitors: visitors as number,
             percentage: pageViews.length > 0 ? (visitors / pageViews.length) * 100 : 0
         }));
 
@@ -330,14 +330,14 @@ async function processAnalyticsData(events: any[], startTime: string) {
         countries: topCountries,
         hourlyTraffic: Array.from({ length: 24 }, (_, hour) => ({
             hour,
-            visitors: Math.floor(Math.random() * 100) + 50 // Replace with real data
+            visitors: Math.floor(Math.random() * 100) + 50 // TODO: Replace with real data
         })),
         dailyTraffic: Array.from({ length: 7 }, (_, i) => {
             const date = new Date();
             date.setDate(date.getDate() - (6 - i));
             return {
                 date: date.toISOString().split('T')[0],
-                visitors: Math.floor(Math.random() * 500) + 200, // Replace with real data
+                visitors: Math.floor(Math.random() * 500) + 200, // TODO: Replace with real data
                 pageViews: Math.floor(Math.random() * 1000) + 400,
             };
         }),

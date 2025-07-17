@@ -120,10 +120,8 @@ export default function AnalyticsPage() {
     }, [checkAuth]);
 
     useEffect(() => {
-        if (isAuthenticated) {
-            fetchAnalytics();
-        }
-    }, [fetchAnalytics]);
+        fetchAnalytics();
+    }, [fetchAnalytics, isAuthenticated]);
 
     if (!isAuthenticated || isLoading) {
         return <LoadingState />;
