@@ -231,13 +231,20 @@ async function processAnalyticsData(events: any[], startTime: string) {
     }, {} as Record<string, number>);
     
     const topPages = Object.entries(pageStats)
-        .sort(([,a], [,b]) => (b as number) - (a as number))
+        .sort(([,a], [,b]) => {
+            const numA = a as number;
+            const numB = b as number;
+            return numB - numA;
+        })
         .slice(0, 10)
-        .map(([page, views]) => ({
+        .map(([page, views]) => {
+            const viewCount = views as number;
+            return {
             page,
-            views: views as number,
-            percentage: pageViews.length > 0 ? (views / pageViews.length) * 100 : 0
-        }));
+            views: viewCount,
+            percentage: pageViews.length > 0 ? (viewCount / pageViews.length) * 100 : 0
+        };
+        });
     
     // Traffic sources
     const sources = pageViews.reduce((acc, event) => {
@@ -261,12 +268,19 @@ async function processAnalyticsData(events: any[], startTime: string) {
     }, {} as Record<string, number>);
     
     const trafficSources = Object.entries(sources)
-        .sort(([,a], [,b]) => (b as number) - (a as number))
-        .map(([source, visitors]) => ({
+        .sort(([,a], [,b]) => {
+            const numA = a as number;
+            const numB = b as number;
+            return numB - numA;
+        })
+        .map(([source, visitors]) => {
+            const visitorCount = visitors as number;
+            return {
             source,
-            visitors: visitors as number,
-            percentage: pageViews.length > 0 ? (visitors / pageViews.length) * 100 : 0
-        }));
+            visitors: visitorCount,
+            percentage: pageViews.length > 0 ? (visitorCount / pageViews.length) * 100 : 0
+        };
+        });
     
     // UTM Campaigns
     const campaigns = pageViews
@@ -295,11 +309,14 @@ async function processAnalyticsData(events: any[], startTime: string) {
     }, {} as Record<string, number>);
     
     const deviceTypes = Object.entries(devices)
-        .map(([device, visitors]) => ({
+        .map(([device, visitors]) => {
+            const visitorCount = visitors as number;
+            return {
             device,
-            visitors,
-            percentage: pageViews.length > 0 ? (visitors / pageViews.length) * 100 : 0
-        }));
+            visitors: visitorCount,
+            percentage: pageViews.length > 0 ? (visitorCount / pageViews.length) * 100 : 0
+        };
+        });
 
     // Countries
     const countries = pageViews.reduce((acc, event) => {
@@ -309,13 +326,20 @@ async function processAnalyticsData(events: any[], startTime: string) {
     }, {} as Record<string, number>);
     
     const topCountries = Object.entries(countries)
-        .sort(([,a], [,b]) => (b as number) - (a as number))
+        .sort(([,a], [,b]) => {
+            const numA = a as number;
+            const numB = b as number;
+            return numB - numA;
+        })
         .slice(0, 6)
-        .map(([country, visitors]) => ({
+        .map(([country, visitors]) => {
+            const visitorCount = visitors as number;
+            return {
             country,
-            visitors: visitors as number,
-            percentage: pageViews.length > 0 ? (visitors / pageViews.length) * 100 : 0
-        }));
+            visitors: visitorCount,
+            percentage: pageViews.length > 0 ? (visitorCount / pageViews.length) * 100 : 0
+        };
+        });
 
     return {
         totalVisitors: pageViews.length,
