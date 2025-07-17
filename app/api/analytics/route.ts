@@ -24,9 +24,9 @@ export async function POST(request: NextRequest) {
         const data: AnalyticsEvent = await request.json();
         
         // Add additional server-side data
-        const ip = request.ip || 
-                  request.headers.get('x-forwarded-for') || 
+        const ip = request.headers.get('x-forwarded-for') || 
                   request.headers.get('x-real-ip') || 
+                  request.headers.get('cf-connecting-ip') ||
                   'unknown';
         
         const userAgent = request.headers.get('user-agent') || '';
