@@ -5,7 +5,7 @@ import Anchor from '@/components/ui/anchor';
 import Container from '@/components/ui/container';
 import Card from '@/components/ui/card';
 import GridLayout from '@/components/grid/layout';
-import { FaX, FaSpotify, FaArrowRight, FaUsers, FaFire } from 'react-icons/fa6';
+import { FaX, FaSpotify, FaArrowRight, FaUsers } from 'react-icons/fa6';
 import { spotifyLayouts } from '@/config/grid';
 
 interface ArtistInfo {
