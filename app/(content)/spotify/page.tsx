@@ -66,7 +66,6 @@ const formatDuration = (ms: number): string => {
 export default function SpotifyPage() {
     const { data, error, isLoading } = useSWR<Spotify>('/api/spotify', fetcher, {
         refreshInterval: 5000,
-        revalidateOnFocus: false,
     });
 
     if (isLoading) return <Loading />;
