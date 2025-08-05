@@ -84,15 +84,9 @@ export default function SpotifyPage() {
 
     return (
         <>
-            <header className='flex items-center justify-center pt-10'>
-                <Anchor className='inline-flex hover:mb-6 hover:scale-125' href='/'>
-                    <FaX />
-                    <div className='sr-only'>Close</div>
-                </Anchor>
-            </header>
             <main>
                 {/* Hero Section with Album Art */}
-                <div className='relative h-96 mb-8 overflow-hidden'>
+                <div className='relative h-screen mb-8 overflow-hidden'>
                     <div 
                         className='absolute inset-0 bg-cover bg-center blur-sm scale-110'
                         style={{
@@ -100,6 +94,15 @@ export default function SpotifyPage() {
                         }}
                     />
                     <div className='absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/80' />
+                    
+                    {/* Close button positioned absolutely */}
+                    <div className='absolute top-10 left-1/2 transform -translate-x-1/2 z-10'>
+                        <Anchor className='inline-flex hover:mb-6 hover:scale-125' href='/'>
+                            <FaX />
+                            <div className='sr-only'>Close</div>
+                        </Anchor>
+                    </div>
+                    
                     <Container className='relative h-full flex items-end'>
                         <div className='flex items-end gap-6 text-white'>
                             <div className='relative w-48 h-48 rounded-2xl overflow-hidden shadow-2xl'>
