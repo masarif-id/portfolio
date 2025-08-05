@@ -182,7 +182,3 @@ export async function GET() {
         }
     }
 }
-
-        return NextResponse.json(await formatResponse(data, accessToken));
-    }
-}
