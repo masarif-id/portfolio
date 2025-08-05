@@ -150,118 +150,16 @@ export default function SpotifyPage() {
                     </Container>
                 </div>
                 <Container as='article' className='py-8'>
+                    <h1 className='font-pixelify-sans text-3xl leading-relaxed'>{pageTitle}</h1>
                     <div className='grid grid-cols-2 gap-10 pb-8 max-md:grid-cols-1'>
                         <div>
-                            <h2 className='font-pixelify-sans text-2xl mb-6'>Track Details</h2>
-                            
-                            {/* Track Info Cards */}
-                            <div className='grid grid-cols-2 gap-4 mb-6'>
-                                <Card className='p-4'>
-                                    <div className='flex items-center gap-3'>
-                                        <FaClock className='text-blue-500' />
-                                        <div>
-                                            <p className='text-sm text-gray-500 dark:text-gray-400'>Duration</p>
-                                            <p className='font-medium'>{data?.duration ? formatDuration(data.duration) : 'N/A'}</p>
-                                        </div>
-                                    </div>
-                                </Card>
-                                
-                                <Card className='p-4'>
-                                    <div className='flex items-center gap-3'>
-                                        <FaMusic className='text-purple-500' />
-                                        <div>
-                                            <p className='text-sm text-gray-500 dark:text-gray-400'>Track</p>
-                                            <p className='font-medium'>{data?.trackNumber} of {data?.totalTracks}</p>
-                                        </div>
-                                    </div>
-                                </Card>
-                                
-                                <Card className='p-4'>
-                                    <div className='flex items-center gap-3'>
-                                        <FaCalendar className='text-green-500' />
-                                        <div>
-                                            <p className='text-sm text-gray-500 dark:text-gray-400'>Released</p>
-                                            <p className='font-medium'>{data?.releaseDate ? formatDate(data.releaseDate) : 'N/A'}</p>
-                                        </div>
-                                    </div>
-                                </Card>
-                                
-                                {data?.progress && (
-                                    <Card className='p-4'>
-                                        <div className='flex items-center gap-3'>
-                                            <FaPlay className='text-[#1DB954]' />
-                                            <div>
-                                                <p className='text-sm text-gray-500 dark:text-gray-400'>Progress</p>
-                                                <p className='font-medium'>{formatDuration(data.progress)} / {data?.duration ? formatDuration(data.duration) : 'N/A'}</p>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                )}
-                            </div>
-
-                            {/* Playback Controls Info */}
-                            {(data?.shuffleState !== undefined || data?.repeatState || data?.device) && (
-                                <Card className='p-6 mb-6'>
-                                    <h3 className='font-pixelify-sans text-lg mb-4 flex items-center gap-2'>
-                                        <FaHeadphones className='text-[#1DB954]' />
-                                        Playback Status
-                                    </h3>
-                                    <div className='space-y-3'>
-                                        {data?.device && (
-                                            <div className='flex items-center justify-between'>
-                                                <div className='flex items-center gap-3'>
-                                                    <FaVolumeHigh className='text-blue-500' />
-                                                    <span>Playing on {data.device.name}</span>
-                                                </div>
-                                                <div className='flex items-center gap-2'>
-                                                    <div className='w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden'>
-                                                        <div 
-                                                            className='h-full bg-blue-500 rounded-full'
-                                                            style={{ width: `${data.device.volume}%` }}
-                                                        />
-                                                    </div>
-                                                    <span className='text-sm'>{data.device.volume}%</span>
-                                                </div>
-                                            </div>
-                                        )}
-                                        
-                                        <div className='flex gap-6'>
-                                            {data?.shuffleState !== undefined && (
-                                                <div className='flex items-center gap-2'>
-                                                    <FaShuffle className={data.shuffleState ? 'text-[#1DB954]' : 'text-gray-400'} />
-                                                    <span className='text-sm'>Shuffle {data.shuffleState ? 'On' : 'Off'}</span>
-                                                </div>
-                                            )}
-                                            {data?.repeatState && (
-                                                <div className='flex items-center gap-2'>
-                                                    <FaRepeat className={data.repeatState !== 'off' ? 'text-[#1DB954]' : 'text-gray-400'} />
-                                                    <span className='text-sm'>Repeat {data.repeatState}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </Card>
-                            )}
-
-                            {/* Action Buttons */}
-                            <div className='flex flex-wrap gap-3'>
-                                {data?.previewUrl && (
-                                    <a
-                                        href={data.previewUrl}
-                                        target='_blank'
-                                        rel='noreferrer nofollow noopener'
-                                        className='group inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium transition-all duration-300 hover:shadow-lg hover:scale-105'>
-                                        <FaPlay />
-                                        Preview Track
-                                        <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
-                                    </a>
-                                )}
+                            <p className='text-xl leading-relaxed font-medium'>{description}</p>
+                            <div className='flex flex-wrap items-center gap-3 pt-4'>
                                 <a
                                     href={data?.songUrl ?? '#'}
                                     target='_blank'
                                     rel='noreferrer nofollow noopener'
-                                    className='group inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#1DB954] text-white rounded-full font-medium transition-all duration-300 hover:shadow-lg hover:scale-105'>
-                                    <FaSpotify />
+                                    className='inline-flex px-5 py-3 text-sm'>
                                     Open in Spotify
                                     <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                                 </a>
@@ -270,96 +168,26 @@ export default function SpotifyPage() {
                                         href={data.artistInfo.url}
                                         target='_blank'
                                         rel='noreferrer nofollow noopener'
-                                        className='group inline-flex items-center justify-center gap-3 px-6 py-3 bg-gray-800 dark:bg-gray-700 text-white rounded-full font-medium transition-all duration-300 hover:shadow-lg hover:scale-105'>
-                                        <FaUsers />
+                                        className='inline-flex px-5 py-3 text-sm'>
                                         View Artist
                                         <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                                     </a>
                                 )}
                             </div>
                         </div>
-
-                        <div>
-                            <h2 className='font-pixelify-sans text-2xl mb-6'>About This Track</h2>
-                            
-                            {/* Artist Info */}
+                        <div className='prose dark:prose-invert'>
+                            <p>
+                                {data?.isPlaying 
+                                    ? `Currently listening to "${data.title}" by ${data.artist} from the album "${data.album}".`
+                                    : `Recently played "${data?.title}" by ${data?.artist} from the album "${data?.album}".`
+                                }
+                            </p>
                             {data?.artistInfo && (
-                                <Card className='p-6 mb-6'>
-                                    <div className='flex items-start gap-4'>
-                                        {data.artistInfo.images && data.artistInfo.images[0] ? (
-                                            <img 
-                                                src={data.artistInfo.images[0].url} 
-                                                alt={data.artistInfo.name}
-                                                className='w-20 h-20 rounded-full object-cover'
-                                            />
-                                        ) : (
-                                            <div className='w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center'>
-                                                <FaMusic className='text-white text-2xl' />
-                                            </div>
-                                        )}
-                                        <div className='flex-1'>
-                                            <h3 className='font-pixelify-sans text-xl mb-2'>{data.artistInfo.name}</h3>
-                                            <div className='flex items-center gap-4 mb-3'>
-                                                <div className='flex items-center gap-2'>
-                                                    <FaUsers className='text-blue-500' />
-                                                    <span className='text-sm'>{formatFollowers(data.artistInfo.followers)} followers</span>
-                                                </div>
-                                                <div className='flex items-center gap-2'>
-                                                    <FaHeart className='text-red-500' />
-                                                    <span className='text-sm'>{data.artistInfo.popularity}/100 popularity</span>
-                                                </div>
-                                            </div>
-                                            {data.artistInfo.genres.length > 0 && (
-                                                <div className='flex flex-wrap gap-2'>
-                                                    {data.artistInfo.genres.slice(0, 3).map((genre) => (
-                                                        <span 
-                                                            key={genre}
-                                                            className='px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full'>
-                                                            {genre}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </Card>
+                                <p>
+                                    {data.artistInfo.name} has {formatFollowers(data.artistInfo.followers)} followers on Spotify
+                                    {data.artistInfo.genres.length > 0 && ` and is known for ${data.artistInfo.genres.slice(0, 2).join(' and ')} music`}.
+                                </p>
                             )}
-
-                            {/* Additional Info */}
-                            <div className='space-y-4'>
-                                {data?.explicit && (
-                                    <div className='flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg'>
-                                        <div className='w-8 h-8 bg-red-500 text-white text-xs font-bold rounded flex items-center justify-center'>
-                                            E
-                                        </div>
-                                        <span className='text-red-700 dark:text-red-300 font-medium'>Explicit Content</span>
-                                    </div>
-                                )}
-
-                                {data?.context && (
-                                    <div className='p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg'>
-                                        <div className='flex items-center gap-3'>
-                                            <FaMusic className='text-blue-500' />
-                                            <div>
-                                                <p className='text-sm text-blue-600 dark:text-blue-400'>Playing from</p>
-                                                <p className='font-medium capitalize'>{data.context.type}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {data?.playedAt && !data?.isPlaying && (
-                                    <div className='p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg'>
-                                        <div className='flex items-center gap-3'>
-                                            <FaClock className='text-gray-500' />
-                                            <div>
-                                                <p className='text-sm text-gray-500 dark:text-gray-400'>Last played</p>
-                                                <p className='font-medium'>{formatDate(data.playedAt)}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </div>
                 </Container>
