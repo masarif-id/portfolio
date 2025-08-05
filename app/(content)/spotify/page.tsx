@@ -77,10 +77,7 @@ export default function SpotifyPage() {
     if (error) return <ErrorDisplay />;
     if (isLoading) return <Loading />;
 
-    // Dynamic title based on playing status
     const pageTitle = data?.isPlaying ? 'Now Playing' : 'Recently Played';
-    
-    // Dynamic description based on playing status
     const description = data?.isPlaying 
         ? 'Arif is currently listening to on Spotify' 
         : 'Arif recently played on Spotify';
@@ -113,7 +110,6 @@ export default function SpotifyPage() {
                                     )}
                                 </div>
 
-                                {/* Track Details */}
                                 <div className='grid grid-cols-2 gap-4 text-sm'>
                                     <div>
                                         <p className='text-gray-500 dark:text-gray-400'>Duration</p>
@@ -135,7 +131,6 @@ export default function SpotifyPage() {
                                     )}
                                 </div>
 
-                                {/* Playback Controls Info */}
                                 {(data?.shuffleState !== undefined || data?.repeatState) && (
                                     <div className='flex gap-4 text-sm'>
                                         {data?.shuffleState !== undefined && (
@@ -153,7 +148,6 @@ export default function SpotifyPage() {
                                     </div>
                                 )}
 
-                                {/* Device Info */}
                                 {data?.device && (
                                     <div className='text-sm'>
                                         <p className='text-gray-500 dark:text-gray-400'>Playing on</p>
@@ -162,7 +156,6 @@ export default function SpotifyPage() {
                                     </div>
                                 )}
 
-                                {/* Context Info */}
                                 {data?.context && (
                                     <div className='text-sm'>
                                         <p className='text-gray-500 dark:text-gray-400'>Playing from</p>
@@ -170,7 +163,6 @@ export default function SpotifyPage() {
                                     </div>
                                 )}
 
-                                {/* Recently Played Time */}
                                 {data?.playedAt && !data?.isPlaying && (
                                     <div className='text-sm'>
                                         <p className='text-gray-500 dark:text-gray-400'>Last played</p>
@@ -178,7 +170,6 @@ export default function SpotifyPage() {
                                     </div>
                                 )}
 
-                                {/* Spotify Links */}
                                 <div className='flex flex-wrap items-center gap-3 pt-4'>
                                     {data?.previewUrl && (
                                         <a
@@ -223,10 +214,7 @@ export default function SpotifyPage() {
                     </div>
                 </Container>
                 
-                {/* Grid Layout for Spotify Views */}
                 <GridLayout layouts={spotifyLayouts} className='-mt-8 pb-16'>
-                    
-                    {/* Album Cover Large */}
                     <div key="spotify-1">
                         <Card 
                             className='relative'
@@ -239,7 +227,6 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Artist Info Card */}
                     <div key="spotify-2">
                         <Card className='flex flex-col justify-center p-6'>
                             {data?.artistInfo ? (
@@ -287,7 +274,6 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Album Info Card */}
                     <div key="spotify-3">
                         <Card className='flex flex-col justify-center p-6'>
                             <div className='space-y-3'>
@@ -312,7 +298,6 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Progress Card */}
                     <div key="spotify-4">
                         <Card className='flex flex-col items-center justify-center p-6'>
                             {data?.progress && data?.duration ? (
@@ -342,12 +327,10 @@ export default function SpotifyPage() {
                                         {data?.isPlaying ? 'Now Playing' : 'Recently Played'}
                                     </p>
                                 </>
-                                )}
-                            </div>
+                            )}
                         </Card>
                     </div>
 
-                    {/* Device/Stats Card */}
                     <div key="spotify-5">
                         <Card className='flex flex-col items-center justify-center p-6'>
                             {data?.device ? (
@@ -380,7 +363,6 @@ export default function SpotifyPage() {
                             )}
                         </Card>
                     </div>
-
                 </GridLayout>
             </main>
         </>
