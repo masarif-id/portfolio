@@ -11,6 +11,7 @@ import { spotifyLayouts } from '@/config/grid';
 interface ArtistInfo {
     name: string;
     genres: string[];
+    images: Array<{ url: string }>;
     followers: number;
     url: string;
     popularity: number;
@@ -23,6 +24,25 @@ interface Spotify {
     artist: string;
     albumImageUrl: string;
     songUrl: string;
+    duration: number;
+    trackNumber: number;
+    explicit: boolean;
+    previewUrl?: string;
+    releaseDate: string;
+    totalTracks: number;
+    progress?: number;
+    device?: {
+        name: string;
+        type: string;
+        volume: number;
+    };
+    shuffleState?: boolean;
+    repeatState?: string;
+    playedAt?: string;
+    context?: {
+        type: string;
+        href: string;
+    };
     artistInfo?: ArtistInfo | null;
 }
 
@@ -35,6 +55,20 @@ const formatFollowers = (count: number): string => {
         return `${(count / 1000).toFixed(1)}K`;
     }
     return count.toString();
+};
+
+const formatDuration = (ms: number): string => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};
+
+const formatDate = (dateString: string): string => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
 };
 
 export default function SpotifyPage() {
@@ -72,12 +106,91 @@ export default function SpotifyPage() {
                                     <h2 className='font-pixelify-sans text-2xl'>{data?.title}</h2>
                                     <p className='text-lg font-medium text-gray-800 dark:text-gray-200'>{data?.artist}</p>
                                     <p className='text-gray-600 dark:text-gray-400'>{data?.album}</p>
+                                    {data?.explicit && (
+                                        <span className='inline-block px-2 py-1 bg-gray-800 text-white text-xs rounded-full mt-2'>
+                                            EXPLICIT
+                                        </span>
+                                    )}
                                 </div>
-                                
 
+                                {/* Track Details */}
+                                <div className='grid grid-cols-2 gap-4 text-sm'>
+                                    <div>
+                                        <p className='text-gray-500 dark:text-gray-400'>Duration</p>
+                                        <p className='font-medium'>{data?.duration ? formatDuration(data.duration) : 'N/A'}</p>
+                                    </div>
+                                    <div>
+                                        <p className='text-gray-500 dark:text-gray-400'>Track</p>
+                                        <p className='font-medium'>{data?.trackNumber} of {data?.totalTracks}</p>
+                                    </div>
+                                    <div>
+                                        <p className='text-gray-500 dark:text-gray-400'>Released</p>
+                                        <p className='font-medium'>{data?.releaseDate ? formatDate(data.releaseDate) : 'N/A'}</p>
+                                    </div>
+                                    {data?.progress && (
+                                        <div>
+                                            <p className='text-gray-500 dark:text-gray-400'>Progress</p>
+                                            <p className='font-medium'>{formatDuration(data.progress)} / {data?.duration ? formatDuration(data.duration) : 'N/A'}</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Playback Controls Info */}
+                                {(data?.shuffleState !== undefined || data?.repeatState) && (
+                                    <div className='flex gap-4 text-sm'>
+                                        {data?.shuffleState !== undefined && (
+                                            <div className='flex items-center gap-2'>
+                                                <span className={`w-2 h-2 rounded-full ${data.shuffleState ? 'bg-green-500' : 'bg-gray-400'}`} />
+                                                <span>Shuffle {data.shuffleState ? 'On' : 'Off'}</span>
+                                            </div>
+                                        )}
+                                        {data?.repeatState && (
+                                            <div className='flex items-center gap-2'>
+                                                <span className={`w-2 h-2 rounded-full ${data.repeatState !== 'off' ? 'bg-green-500' : 'bg-gray-400'}`} />
+                                                <span>Repeat {data.repeatState}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Device Info */}
+                                {data?.device && (
+                                    <div className='text-sm'>
+                                        <p className='text-gray-500 dark:text-gray-400'>Playing on</p>
+                                        <p className='font-medium'>{data.device.name} ({data.device.type})</p>
+                                        <p className='text-gray-500 dark:text-gray-400'>Volume: {data.device.volume}%</p>
+                                    </div>
+                                )}
+
+                                {/* Context Info */}
+                                {data?.context && (
+                                    <div className='text-sm'>
+                                        <p className='text-gray-500 dark:text-gray-400'>Playing from</p>
+                                        <p className='font-medium capitalize'>{data.context.type}</p>
+                                    </div>
+                                )}
+
+                                {/* Recently Played Time */}
+                                {data?.playedAt && !data?.isPlaying && (
+                                    <div className='text-sm'>
+                                        <p className='text-gray-500 dark:text-gray-400'>Last played</p>
+                                        <p className='font-medium'>{formatDate(data.playedAt)}</p>
+                                    </div>
+                                )}
 
                                 {/* Spotify Links */}
                                 <div className='flex flex-wrap items-center gap-3 pt-4'>
+                                    {data?.previewUrl && (
+                                        <a
+                                            href={data.previewUrl}
+                                            target='_blank'
+                                            rel='noreferrer nofollow noopener'
+                                            className='group inline-flex items-center justify-center gap-3 px-5 py-3 text-sm bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-all duration-300'>
+                                            <FaSpotify />
+                                            Preview
+                                            <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
+                                        </a>
+                                    )}
                                     <a
                                         href={data?.songUrl ?? '#'}
                                         target='_blank'
@@ -131,8 +244,16 @@ export default function SpotifyPage() {
                         <Card className='flex flex-col justify-center p-6'>
                             {data?.artistInfo ? (
                                 <div className='space-y-3'>
-                                    <div className='flex items-center gap-3'>
-                                        <FaSpotify className='text-[#1DB954]' size='3rem' />
+                                    <div className='flex items-center gap-3 mb-4'>
+                                        {data.artistInfo.images && data.artistInfo.images[0] ? (
+                                            <img 
+                                                src={data.artistInfo.images[0].url} 
+                                                alt={data.artistInfo.name}
+                                                className='w-12 h-12 rounded-full object-cover'
+                                            />
+                                        ) : (
+                                            <FaSpotify className='text-[#1DB954]' size='3rem' />
+                                        )}
                                         <div>
                                             <h3 className='font-pixelify-sans text-lg line-clamp-1'>{data.artistInfo.name}</h3>
                                             <p className='text-sm text-gray-600 dark:text-gray-400'>
@@ -166,46 +287,86 @@ export default function SpotifyPage() {
                         </Card>
                     </div>
 
-                    {/* Popularity Card */}
+                    {/* Album Info Card */}
                     <div key="spotify-3">
+                        <Card className='flex flex-col justify-center p-6'>
+                            <div className='space-y-3'>
+                                <h3 className='font-pixelify-sans text-lg line-clamp-2'>{data?.album}</h3>
+                                <div className='space-y-2 text-sm'>
+                                    <div className='flex justify-between'>
+                                        <span className='text-gray-500 dark:text-gray-400'>Tracks:</span>
+                                        <span className='font-medium'>{data?.totalTracks}</span>
+                                    </div>
+                                    <div className='flex justify-between'>
+                                        <span className='text-gray-500 dark:text-gray-400'>Released:</span>
+                                        <span className='font-medium'>{data?.releaseDate ? new Date(data.releaseDate).getFullYear() : 'N/A'}</span>
+                                    </div>
+                                    {data?.artistInfo && (
+                                        <div className='flex justify-between'>
+                                            <span className='text-gray-500 dark:text-gray-400'>Popularity:</span>
+                                            <span className='font-medium'>{data.artistInfo.popularity}/100</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+
+                    {/* Progress Card */}
+                    <div key="spotify-4">
                         <Card className='flex flex-col items-center justify-center p-6'>
-                            {data?.artistInfo ? (
+                            {data?.progress && data?.duration ? (
                                 <>
-                                    <FaFire size='2rem' className='mb-3 text-orange-500' />
-                                    <p className='text-2xl font-bold'>{data.artistInfo.popularity}</p>
-                                    <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>Popularity Score</p>
+                                    <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3'>
+                                        <div 
+                                            className='bg-[#1DB954] h-2 rounded-full transition-all duration-300'
+                                            style={{ width: `${(data.progress / data.duration) * 100}%` }}
+                                        />
+                                    </div>
+                                    <p className='text-sm font-medium text-center'>
+                                        {formatDuration(data.progress)} / {formatDuration(data.duration)}
+                                    </p>
                                 </>
                             ) : (
                                 <>
-                                    <FaSpotify size='2rem' className='mb-3 text-[#1DB954]' />
-                                    <p className='text-sm font-medium text-center'>Listen on Spotify</p>
-                                </>
-                            )}
-                        </Card>
-                    </div>
-
-                    {/* Playing Status */}
-                    <div key="spotify-4">
-                        <Card className='flex flex-col items-center justify-center p-6'>
-                            <div className='flex items-center gap-3 mb-3'>
-                                {data?.isPlaying && (
-                                    <div className='inline-flex items-center justify-center gap-1'>
-                                        <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                        <div className='w-1 h-4 animate-[playing_0.62s_ease_infinite] rounded-full bg-[#1DB954]' />
-                                        <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                    <div className='flex items-center gap-3 mb-3'>
+                                        {data?.isPlaying && (
+                                            <div className='inline-flex items-center justify-center gap-1'>
+                                                <div className='w-1 h-4 animate-[playing_0.85s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                                <div className='w-1 h-4 animate-[playing_0.62s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                                <div className='w-1 h-4 animate-[playing_1.26s_ease_infinite] rounded-full bg-[#1DB954]' />
+                                            </div>
+                                        )}
                                     </div>
+                                    <p className='text-sm font-medium text-center text-[#1DB954]'>
+                                        {data?.isPlaying ? 'Now Playing' : 'Recently Played'}
+                                    </p>
+                                </>
                                 )}
                             </div>
-                            <p className='text-sm font-medium text-center text-[#1DB954]'>
-                                {data?.isPlaying ? 'Now Playing' : 'Recently Played'}
-                            </p>
                         </Card>
                     </div>
 
-                    {/* Followers Card */}
+                    {/* Device/Stats Card */}
                     <div key="spotify-5">
                         <Card className='flex flex-col items-center justify-center p-6'>
-                            {data?.artistInfo ? (
+                            {data?.device ? (
+                                <>
+                                    <div className='text-center'>
+                                        <p className='font-pixelify-sans text-lg mb-2'>{data.device.name}</p>
+                                        <p className='text-sm text-gray-600 dark:text-gray-400 mb-2 capitalize'>{data.device.type}</p>
+                                        <div className='flex items-center justify-center gap-2'>
+                                            <div className='w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-2'>
+                                                <div 
+                                                    className='bg-[#1DB954] h-2 rounded-full'
+                                                    style={{ width: `${data.device.volume}%` }}
+                                                />
+                                            </div>
+                                            <span className='text-xs'>{data.device.volume}%</span>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : data?.artistInfo ? (
                                 <>
                                     <FaUsers size='2rem' className='mb-3 text-blue-500' />
                                     <p className='text-lg font-bold'>{formatFollowers(data.artistInfo.followers)}</p>

@@ -2,8 +2,14 @@ import { NextResponse } from 'next/server';
 
 interface SpotifyTrack {
     name: string;
+    duration_ms: number;
+    track_number: number;
+    explicit: boolean;
+    preview_url?: string;
     album: {
         name: string;
+        release_date: string;
+        total_tracks: number;
         artists: Array<{ name: string }>;
         images: Array<{ url: string }>;
     };
@@ -11,6 +17,7 @@ interface SpotifyTrack {
         spotify: string;
     };
     artists: Array<{
+        id: string;
         name: string;
         external_urls: {
             spotify: string;
@@ -20,15 +27,31 @@ interface SpotifyTrack {
 
 interface SpotifyApi {
     is_playing: boolean;
+    progress_ms?: number;
+    device?: {
+        name: string;
+        type: string;
+        volume_percent: number;
+    };
+    shuffle_state?: boolean;
+    repeat_state?: string;
     currently_playing_type?: string;
     item?: SpotifyTrack;
-    items?: Array<{ track: SpotifyTrack }>;
+    items?: Array<{ 
+        track: SpotifyTrack;
+        played_at: string;
+        context?: {
+            type: string;
+            href: string;
+        };
+    }>;
 }
 
 interface SpotifyArtist {
     id: string;
     name: string;
     genres: string[];
+    images: Array<{ url: string }>;
     followers: {
         total: number;
     };
@@ -97,7 +120,11 @@ const getArtistInfo = async (artistId: string, accessToken: string): Promise<Spo
 };
 
 const formatResponse = async (data: SpotifyApi, accessToken: string) => {
+    const isCurrentlyPlaying = !!data.item;
     const track = data.item ?? data.items?.[0]?.track;
+    const playedAt = data.items?.[0]?.played_at;
+    const context = data.items?.[0]?.context;
+    
     if (!track) {
         throw new Error('No track data available');
     }
@@ -107,8 +134,7 @@ const formatResponse = async (data: SpotifyApi, accessToken: string) => {
     let artistInfo = null;
 
     if (firstArtist) {
-        // Extract artist ID from Spotify URL or use search
-        const artistId = firstArtist.external_urls?.spotify?.split('/').pop();
+        const artistId = firstArtist.id;
         if (artistId) {
             artistInfo = await getArtistInfo(artistId, accessToken);
         }
@@ -121,12 +147,35 @@ const formatResponse = async (data: SpotifyApi, accessToken: string) => {
         artist: track.album.artists.map((artist) => artist.name).join(', '),
         albumImageUrl: track.album.images[0]?.url,
         songUrl: track.external_urls.spotify,
+        // Additional track data
+        duration: track.duration_ms,
+        trackNumber: track.track_number,
+        explicit: track.explicit,
+        previewUrl: track.preview_url,
+        releaseDate: track.album.release_date,
+        totalTracks: track.album.total_tracks,
+        // Playback data
+        progress: data.progress_ms,
+        device: data.device ? {
+            name: data.device.name,
+            type: data.device.type,
+            volume: data.device.volume_percent,
+        } : null,
+        shuffleState: data.shuffle_state,
+        repeatState: data.repeat_state,
+        // Recently played data
+        playedAt: playedAt,
+        context: context ? {
+            type: context.type,
+            href: context.href,
+        } : null,
         artistInfo: artistInfo ? {
             name: artistInfo.name,
             genres: artistInfo.genres,
             followers: artistInfo.followers.total,
             url: artistInfo.external_urls.spotify,
             popularity: artistInfo.popularity,
+            images: artistInfo.images,
         } : null,
     };
 };
