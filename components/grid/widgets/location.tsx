@@ -18,6 +18,22 @@ const INITIAL_VIEW_STATE = {
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 export default function Location() {
+    // Don't render the map if no token is available
+    if (!mapboxToken) {
+        return (
+            <Card className='relative size-full flex items-center justify-center'>
+                <div className='text-center p-4'>
+                    <p className='text-sm text-gray-600 dark:text-gray-400'>
+                        Mapbox token not configured
+                    </p>
+                    <p className='text-xs text-gray-500 dark:text-gray-500 mt-1'>
+                        Please add NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN to .env.local
+                    </p>
+                </div>
+            </Card>
+        );
+    }
+
     const [currentZoom, setCurrentZoom] = useState(MAX_ZOOM);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [isMapLoaded, setIsMapLoaded] = useState(false);

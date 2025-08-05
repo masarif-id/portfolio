@@ -41,6 +41,12 @@ interface SpotifyArtist {
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const SPOTIFY_REFRESH_TOKEN = process.env.SPOTIFY_REFRESH_TOKEN ?? '';
+
+// Check if required environment variables are present
+if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REFRESH_TOKEN) {
+    console.error('Missing required Spotify environment variables');
+}
+
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_NOW_PLAYING_URL = 'https://api.spotify.com/v1/me/player/currently-playing';
 const SPOTIFY_RECENTLY_PLAYED_URL = 'https://api.spotify.com/v1/me/player/recently-played?limit=1';
@@ -126,6 +132,22 @@ const formatResponse = async (data: SpotifyApi, accessToken: string) => {
 };
 
 export async function GET() {
+    // Return error response if environment variables are missing
+    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REFRESH_TOKEN) {
+        return NextResponse.json(
+            { 
+                error: 'Spotify API credentials not configured',
+                isPlaying: false,
+                title: 'Configuration Error',
+                album: 'Please check environment variables',
+                artist: 'System',
+                albumImageUrl: '',
+                songUrl: '#',
+            },
+            { status: 500 }
+        );
+    }
+
     try {
         const accessToken = await getAccessToken();
         let data = await fetchSpotifyData(SPOTIFY_NOW_PLAYING_URL, accessToken);
@@ -136,8 +158,30 @@ export async function GET() {
 
         return NextResponse.json(await formatResponse(data, accessToken));
     } catch (error) {
-        const accessToken = await getAccessToken();
-        const data = await fetchSpotifyData(SPOTIFY_RECENTLY_PLAYED_URL, accessToken);
+        console.error('Spotify API error:', error);
+        
+        try {
+            const accessToken = await getAccessToken();
+            const data = await fetchSpotifyData(SPOTIFY_RECENTLY_PLAYED_URL, accessToken);
+            return NextResponse.json(await formatResponse(data, accessToken));
+        } catch (fallbackError) {
+            console.error('Spotify fallback error:', fallbackError);
+            
+            return NextResponse.json(
+                {
+                    error: 'Failed to fetch Spotify data',
+                    isPlaying: false,
+                    title: 'Unable to load track',
+                    album: 'Please check your Spotify configuration',
+                    artist: 'System',
+                    albumImageUrl: '',
+                    songUrl: '#',
+                },
+                { status: 500 }
+            );
+        }
+    }
+}
 
         return NextResponse.json(await formatResponse(data, accessToken));
     }
