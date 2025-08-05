@@ -61,9 +61,18 @@ const formatDuration = (ms: number): string => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        month: 'long',
-                                    )}
-                            {data?.device ? (
+};
+
+export default function SpotifyPage() {
+    const { data, error, isLoading } = useSWR<Spotify>('/api/spotify', fetcher, {
+        refreshInterval: 5000,
+        revalidateOnFocus: false,
+    });
+
+    if (isLoading) return <Loading />;
+    if (error) return <ErrorDisplay />;
+
+    return (
         <main className='relative h-screen overflow-hidden'>
             {/* Background Image with Blur */}
             <div 
