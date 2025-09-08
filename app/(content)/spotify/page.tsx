@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import Anchor from '@/components/ui/anchor';
 import Card from '@/components/ui/card';
@@ -24,6 +24,7 @@ export default function SpotifyPage() {
     
     const mountRef = useRef<HTMLDivElement>(null);
     const sceneRef = useRef<any>(null);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
         if (!mountRef.current) return;
@@ -61,11 +62,11 @@ export default function SpotifyPage() {
             const raycaster = new THREE.Raycaster();
 
             // Create text sprite function
-            function createTextSprite(message: string) {
+            function createTextSprite(message: string, isMainText = false) {
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d')!;
-                const fontSize = 48;
-                const glowSize = 15;
+                const fontSize = isMainText ? 64 : 32;
+                const glowSize = isMainText ? 20 : 10;
                 context.font = `${fontSize}px Arial`;
                 
                 const metrics = context.measureText(message);
@@ -77,14 +78,15 @@ export default function SpotifyPage() {
                 context.font = `${fontSize}px Arial`;
                 context.shadowColor = 'white';
                 context.shadowBlur = glowSize;
-                context.fillStyle = 'white';
+                context.fillStyle = isMainText ? '#1DB954' : 'white';
                 context.fillText(message, glowSize, fontSize + glowSize / 2);
                 
                 const texture = new THREE.CanvasTexture(canvas);
                 const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
                 const sprite = new THREE.Sprite(spriteMaterial);
                 
-                sprite.scale.set(canvas.width / 100, canvas.height / 100, 1.0);
+                const scale = isMainText ? canvas.width / 80 : canvas.width / 120;
+                sprite.scale.set(scale, canvas.height / (isMainText ? 80 : 120), 1.0);
                 return sprite;
             }
 
@@ -114,8 +116,25 @@ export default function SpotifyPage() {
                 return sprite;
             }
 
-            // Create particles
-            const words = ['music', 'sound', 'rhythm', 'melody', 'harmony'];
+            // Create particles with dynamic content
+            function createParticles() {
+                // Clear existing particles
+                particles.forEach(particle => scene.remove(particle));
+                particles.length = 0;
+
+                const baseWords = ['music', 'sound', 'rhythm', 'melody', 'harmony', 'beat', 'tune', 'vibe'];
+                let dynamicWords = [...baseWords];
+                
+                // Add song title and artist if available
+                if (data?.title) {
+                    const titleWords = data.title.split(' ').filter(word => word.length > 2);
+                    dynamicWords = [...titleWords.slice(0, 3), ...baseWords];
+                }
+                if (data?.artist) {
+                    const artistWords = data.artist.split(' ').filter(word => word.length > 2);
+                    dynamicWords = [...artistWords.slice(0, 2), ...dynamicWords];
+                }
+
             const count = 400;
             const spread = 30;
 
@@ -123,12 +142,15 @@ export default function SpotifyPage() {
                 let particle: any;
                 const rand = Math.random();
 
-                if (rand < 0.5) {
+                if (rand < 0.4) {
                     particle = createDotSprite();
                     particle.scale.set(0.1, 0.1, 1.0);
-                } else if (rand < 0.8) {
-                    const word = words[Math.floor(Math.random() * words.length)];
-                    particle = createTextSprite(word);
+                } else if (rand < 0.7) {
+                    const word = dynamicWords[Math.floor(Math.random() * dynamicWords.length)];
+                    particle = createTextSprite(word, false);
+                } else if (rand < 0.85 && data?.title) {
+                    // Add main song title occasionally
+                    particle = createTextSprite(data.title.split(' ')[0] || 'Music', true);
                 } else {
                     particle = createDotSprite();
                     const randomScale = Math.random() * 0.25 + 0.1;
@@ -148,7 +170,11 @@ export default function SpotifyPage() {
                 scene.add(particle);
                 particles.push(particle);
             }
+            }
 
+            // Initial particle creation
+            createParticles();
+            setIsInitialized(true);
             // Animation loop
             function animate() {
                 animationId = requestAnimationFrame(animate);
@@ -228,8 +254,18 @@ export default function SpotifyPage() {
                 sceneRef.current.cleanup();
             }
         };
-    }, []);
+    }, [data?.title, data?.artist]);
 
+    // Recreate particles when song changes
+    useEffect(() => {
+        if (isInitialized && sceneRef.current) {
+            // Small delay to ensure smooth transition
+            const timer = setTimeout(() => {
+                // This will trigger the main useEffect to recreate particles
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [data?.title, data?.artist, isInitialized]);
     if (error) return <ErrorDisplay />;
 
     return (
@@ -242,7 +278,7 @@ export default function SpotifyPage() {
             />
             
             {/* Close Button */}
-            <div className="absolute top-10 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 md:top-10">
                 <Anchor className='inline-flex hover:mb-6 hover:scale-125' href='/'>
                     <FaX />
                     <div className='sr-only'>Close</div>
@@ -250,7 +286,7 @@ export default function SpotifyPage() {
             </div>
 
             {/* Music Card */}
-            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none p-4">
                 <div className="pointer-events-auto">
                     {isLoading ? <LoadingCard /> : <MusicCard data={data} />}
                 </div>
@@ -263,11 +299,11 @@ function MusicCard({ data }: { data?: Spotify }) {
     if (!data) return <LoadingCard />;
 
     return (
-        <Card className="w-96 max-w-[90vw] bg-black/80 backdrop-blur-md border border-white/20">
-            <div className="p-8 text-center">
+        <Card className="w-80 max-w-[85vw] bg-black/90 backdrop-blur-lg border border-white/30 shadow-2xl md:w-96">
+            <div className="p-6 text-center md:p-8">
                 {/* Album Cover */}
                 {data.albumImageUrl && (
-                    <div className="w-48 h-48 mx-auto mb-6 rounded-2xl overflow-hidden shadow-2xl">
+                    <div className="w-32 h-32 mx-auto mb-4 rounded-xl overflow-hidden shadow-2xl md:w-48 md:h-48 md:mb-6 md:rounded-2xl">
                         <img 
                             src={data.albumImageUrl} 
                             alt={data.album}
@@ -277,28 +313,28 @@ function MusicCard({ data }: { data?: Spotify }) {
                 )}
                 
                 {/* Track Info */}
-                <div className="space-y-3 mb-6">
-                    <h1 className="text-2xl font-bold text-white line-clamp-2">
+                <div className="space-y-2 mb-4 md:space-y-3 md:mb-6">
+                    <h1 className="text-lg font-bold text-white line-clamp-2 md:text-2xl">
                         {data.title}
                     </h1>
-                    <p className="text-lg text-gray-300">
+                    <p className="text-sm text-gray-300 md:text-lg">
                         {data.artist}
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-xs text-gray-400 md:text-sm">
                         {data.album}
                     </p>
                 </div>
 
                 {/* Status */}
-                <div className="flex items-center justify-center gap-2 mb-6">
+                <div className="flex items-center justify-center gap-2 mb-4 md:mb-6">
                     {data.isPlaying && (
-                        <div className="flex items-center gap-1">
-                            <div className="w-1 h-4 bg-green-500 rounded-full animate-pulse" />
-                            <div className="w-1 h-4 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-                            <div className="w-1 h-4 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+                        <div className="flex items-center gap-0.5">
+                            <div className="w-0.5 h-3 bg-green-500 rounded-full animate-pulse md:w-1 md:h-4" />
+                            <div className="w-0.5 h-3 bg-green-500 rounded-full animate-pulse md:w-1 md:h-4" style={{ animationDelay: '0.2s' }} />
+                            <div className="w-0.5 h-3 bg-green-500 rounded-full animate-pulse md:w-1 md:h-4" style={{ animationDelay: '0.4s' }} />
                         </div>
                     )}
-                    <p className="text-sm text-gray-400">
+                    <p className="text-xs text-gray-400 md:text-sm">
                         {data.isPlaying ? 'Now Playing' : 'Recently Played'}
                     </p>
                 </div>
@@ -308,11 +344,11 @@ function MusicCard({ data }: { data?: Spotify }) {
                     href={data.songUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition-all duration-300 hover:scale-105"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition-all duration-300 hover:scale-105 text-sm md:gap-3 md:px-6 md:py-3 md:text-base"
                 >
-                    <FaSpotify />
+                    <FaSpotify className="text-sm md:text-base" />
                     Open in Spotify
-                    <FaArrowRight className="-rotate-45 transition-transform duration-300 group-hover:rotate-0" />
+                    <FaArrowRight className="-rotate-45 transition-transform duration-300 group-hover:rotate-0 text-sm md:text-base" />
                 </a>
             </div>
         </Card>
@@ -321,15 +357,15 @@ function MusicCard({ data }: { data?: Spotify }) {
 
 function LoadingCard() {
     return (
-        <Card className="w-96 max-w-[90vw] bg-black/80 backdrop-blur-md border border-white/20">
-            <div className="p-8 text-center">
-                <div className="w-48 h-48 mx-auto mb-6 bg-gray-700 animate-pulse rounded-2xl" />
-                <div className="space-y-3 mb-6">
-                    <div className="h-8 bg-gray-700 animate-pulse rounded-md mx-auto w-3/4" />
-                    <div className="h-6 bg-gray-700 animate-pulse rounded-md mx-auto w-1/2" />
-                    <div className="h-4 bg-gray-700 animate-pulse rounded-md mx-auto w-2/3" />
+        <Card className="w-80 max-w-[85vw] bg-black/90 backdrop-blur-lg border border-white/30 md:w-96">
+            <div className="p-6 text-center md:p-8">
+                <div className="w-32 h-32 mx-auto mb-4 bg-gray-700 animate-pulse rounded-xl md:w-48 md:h-48 md:mb-6 md:rounded-2xl" />
+                <div className="space-y-2 mb-4 md:space-y-3 md:mb-6">
+                    <div className="h-6 bg-gray-700 animate-pulse rounded-md mx-auto w-3/4 md:h-8" />
+                    <div className="h-4 bg-gray-700 animate-pulse rounded-md mx-auto w-1/2 md:h-6" />
+                    <div className="h-3 bg-gray-700 animate-pulse rounded-md mx-auto w-2/3 md:h-4" />
                 </div>
-                <div className="h-12 bg-gray-700 animate-pulse rounded-full mx-auto w-48" />
+                <div className="h-10 bg-gray-700 animate-pulse rounded-full mx-auto w-40 md:h-12 md:w-48" />
             </div>
         </Card>
     );
@@ -338,13 +374,13 @@ function LoadingCard() {
 function ErrorDisplay() {
     return (
         <div className="w-full h-screen bg-black flex items-center justify-center">
-            <Card className="w-96 max-w-[90vw] bg-black/80 backdrop-blur-md border border-red-500/20">
-                <div className="p-8 text-center">
+            <Card className="w-80 max-w-[85vw] bg-black/90 backdrop-blur-lg border border-red-500/30 md:w-96">
+                <div className="p-6 text-center md:p-8">
                     <div className="text-red-500 mb-4">
-                        <FaX size="3rem" className="mx-auto" />
+                        <FaX size="2rem" className="mx-auto md:text-5xl" />
                     </div>
-                    <h2 className="text-xl font-bold text-white mb-2">Failed to Load</h2>
-                    <p className="text-gray-400 mb-6">Unable to fetch Spotify data</p>
+                    <h2 className="text-lg font-bold text-white mb-2 md:text-xl">Failed to Load</h2>
+                    <p className="text-sm text-gray-400 mb-4 md:text-base md:mb-6">Unable to fetch Spotify data</p>
                     <Anchor href="/" className="inline-flex">
                         <FaArrowRight className="-rotate-45" />
                         Back to Home
