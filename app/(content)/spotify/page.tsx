@@ -29,9 +29,8 @@ export default function SpotifyPage() {
     useEffect(() => {
         if (!mountRef.current) return;
 
-        let scene: any, camera: any, renderer: any, controls: any;
+        let scene: any, camera: any, renderer: any, controls: any, animationId: number;
         let particles: any[] = [];
-        let animationId: number;
 
         const initThreeJS = async () => {
             try {
@@ -46,10 +45,17 @@ export default function SpotifyPage() {
                 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
                 camera.position.z = 12;
 
-                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer = new THREE.WebGLRenderer({ 
+                    antialias: true, 
+                    alpha: true,
+                    powerPreference: "high-performance"
+                });
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.setClearColor(0x000000, 1);
-                mountRef.current?.appendChild(renderer.domElement);
+                
+                if (mountRef.current) {
+                    mountRef.current.appendChild(renderer.domElement);
+                }
 
                 controls = new OrbitControls(camera, renderer.domElement);
                 controls.enableDamping = true;
@@ -120,7 +126,11 @@ export default function SpotifyPage() {
                 // Create particles with dynamic content
                 function createParticles() {
                     // Clear existing particles
-                    particles.forEach(particle => scene.remove(particle));
+                    particles.forEach(particle => {
+                        if (scene && particle) {
+                            scene.remove(particle);
+                        }
+                    });
                     particles.length = 0;
 
                     const baseWords = ['music', 'sound', 'rhythm', 'melody', 'harmony', 'beat', 'tune', 'vibe'];
@@ -165,7 +175,11 @@ export default function SpotifyPage() {
                         
                         particle.userData = {
                             basePosition: new THREE.Vector3(x, y, z),
-                            velocity: new THREE.Vector3(0, 0, Math.random() * 0.02 + 0.02)
+                            velocity: new THREE.Vector3(
+                                (Math.random() - 0.5) * 0.01,
+                                (Math.random() - 0.5) * 0.01,
+                                Math.random() * 0.02 + 0.02
+                            )
                         };
 
                         scene.add(particle);
@@ -180,45 +194,41 @@ export default function SpotifyPage() {
                 // Animation loop
                 function animate() {
                     animationId = requestAnimationFrame(animate);
-                    controls.update();
+                    
+                    if (controls) controls.update();
 
                     raycaster.setFromCamera(mouse, camera);
                     const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
                     raycaster.ray.intersectPlane(plane, mousePoint);
 
                     particles.forEach(particle => {
-                        particle.position.z += particle.userData.velocity.z;
+                        if (particle && particle.userData) {
+                            particle.position.add(particle.userData.velocity);
 
-                        const distanceToMouse = particle.position.distanceTo(mousePoint);
-                        const repulsionRadius = 2.0;
-                        
-                        if (distanceToMouse < repulsionRadius) {
-                            const repulsionForce = (1 - (distanceToMouse / repulsionRadius)) * 0.1;
-                            const direction = new THREE.Vector3().subVectors(particle.position, mousePoint).normalize();
-                            particle.position.add(direction.multiplyScalar(repulsionForce));
-                        }
+                            const distanceToMouse = particle.position.distanceTo(mousePoint);
+                            const repulsionRadius = 2.0;
+                            
+                            if (distanceToMouse < repulsionRadius) {
+                                const repulsionForce = (1 - (distanceToMouse / repulsionRadius)) * 0.1;
+                                const direction = new THREE.Vector3().subVectors(particle.position, mousePoint).normalize();
+                                particle.position.add(direction.multiplyScalar(repulsionForce));
+                            }
 
-                        particle.position.lerp(
-                            new THREE.Vector3(
-                                particle.userData.basePosition.x, 
-                                particle.userData.basePosition.y, 
-                                particle.position.z
-                            ), 
-                            0.01
-                        );
-                        
-                        if (particle.position.z > camera.position.z) {
-                            particle.position.z = -spread / 2;
-                            particle.userData.basePosition.x = (Math.random() - 0.5) * spread;
-                            particle.userData.basePosition.y = (Math.random() - 0.5) * spread;
-                            particle.position.x = particle.userData.basePosition.x;
-                            particle.position.y = particle.userData.basePosition.y;
+                            // Reset particle if it goes too far
+                            if (particle.position.z > camera.position.z + 5) {
+                                particle.position.z = -spread / 2;
+                                particle.userData.basePosition.x = (Math.random() - 0.5) * spread;
+                                particle.userData.basePosition.y = (Math.random() - 0.5) * spread;
+                                particle.position.x = particle.userData.basePosition.x;
+                                particle.position.y = particle.userData.basePosition.y;
+                            }
                         }
                     });
                     
-                    renderer.render(scene, camera);
+                    if (renderer && scene && camera) {
+                        renderer.render(scene, camera);
+                    }
                 }
-                animate();
 
                 // Event listeners
                 const handleMouseMove = (event: MouseEvent) => {
@@ -227,30 +237,46 @@ export default function SpotifyPage() {
                 };
 
                 const handleResize = () => {
-                    camera.aspect = window.innerWidth / window.innerHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    if (camera && renderer) {
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                    }
                 };
 
                 window.addEventListener('mousemove', handleMouseMove);
                 window.addEventListener('resize', handleResize);
+
+                // Start animation
+                animate();
+                setIsInitialized(true);
 
                 // Store cleanup functions
                 sceneRef.current = {
                     cleanup: () => {
                         window.removeEventListener('mousemove', handleMouseMove);
                         window.removeEventListener('resize', handleResize);
-                        cancelAnimationFrame(animationId);
+                        if (animationId) {
+                            cancelAnimationFrame(animationId);
+                        }
+                        particles.forEach(particle => {
+                            if (scene && particle) {
+                                scene.remove(particle);
+                            }
+                        });
                         if (mountRef.current && renderer.domElement) {
                             mountRef.current.removeChild(renderer.domElement);
                         }
-                        renderer.dispose();
+                        if (renderer) {
+                            renderer.dispose();
+                        }
                     },
                     recreateParticles: createParticles
                 };
             } catch (error) {
                 console.error('Failed to initialize Three.js:', error);
-                setIsInitialized(true); // Still show the card even if 3D fails
+                // Still show the card even if 3D fails
+                setIsInitialized(true);
             }
         };
 
@@ -265,9 +291,13 @@ export default function SpotifyPage() {
 
     // Recreate particles when song changes
     useEffect(() => {
-        if (isInitialized && sceneRef.current?.recreateParticles) {
+        if (isInitialized && sceneRef.current?.recreateParticles && data) {
             const timer = setTimeout(() => {
-                sceneRef.current.recreateParticles();
+                try {
+                    sceneRef.current.recreateParticles();
+                } catch (error) {
+                    console.error('Failed to recreate particles:', error);
+                }
             }, 500);
             return () => clearTimeout(timer);
         }
@@ -280,7 +310,7 @@ export default function SpotifyPage() {
             {/* Three.js Canvas Container */}
             <div 
                 ref={mountRef} 
-                className="absolute inset-0 z-0"
+                className="absolute inset-0 z-0 overflow-hidden"
                 style={{ background: '#000000' }}
             />
             
@@ -295,7 +325,17 @@ export default function SpotifyPage() {
             {/* Music Card */}
             <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none p-4">
                 <div className="pointer-events-auto">
-                    {isLoading ? <LoadingCard /> : <MusicCard data={data} />}
+                    {!isInitialized ? (
+                        <div className="w-full max-w-sm bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl md:max-w-md lg:max-w-lg">
+                            <div className="p-4 text-center md:p-6 lg:p-8">
+                                <div className="text-white">Initializing galaxy...</div>
+                            </div>
+                        </div>
+                    ) : isLoading ? (
+                        <LoadingCard />
+                    ) : (
+                        <MusicCard data={data} />
+                    )}
                 </div>
             </div>
         </div>
