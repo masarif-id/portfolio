@@ -148,6 +148,7 @@ export default function SpotifyPage() {
 
                     const count = 400;
                     const spread = 30;
+                    const spread = 30;
 
                     for (let i = 0; i < count; i++) {
                         let particle: any;
@@ -355,6 +356,7 @@ function MusicCard({ data }: { data?: Spotify }) {
                             src={data.albumImageUrl} 
                             alt={data.album}
                             className="w-full h-full object-cover"
+                            loading="lazy"
                         />
                     </div>
                 )}
