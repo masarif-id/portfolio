@@ -62,8 +62,7 @@ export default function SpotifyPage() {
                 controls.enableDamping = true;
                 controls.dampingFactor = 0.05;
                 controls.enableZoom = true;
-                controls.autoRotate = true;
-                controls.autoRotateSpeed = 0.5;
+                controls.autoRotate = false;
 
                 const mouse = new THREE.Vector2();
                 const mousePoint = new THREE.Vector3();
@@ -176,10 +175,11 @@ export default function SpotifyPage() {
                         particle.userData = {
                             basePosition: new THREE.Vector3(x, y, z),
                             velocity: new THREE.Vector3(
-                                (Math.random() - 0.5) * 0.01,
-                                (Math.random() - 0.5) * 0.01,
-                                Math.random() * 0.02 + 0.02
-                            )
+                                (Math.random() - 0.5) * 0.005,
+                                -(Math.random() * 0.03 + 0.02),
+                                (Math.random() - 0.5) * 0.005
+                            ),
+                            fallSpeed: Math.random() * 0.02 + 0.01
                         };
 
                         scene.add(particle);
@@ -203,24 +203,24 @@ export default function SpotifyPage() {
 
                     particles.forEach(particle => {
                         if (particle && particle.userData) {
-                            particle.position.add(particle.userData.velocity);
+                            particle.position.y += particle.userData.velocity.y;
+                            particle.position.x += particle.userData.velocity.x * 0.5;
+                            particle.position.z += particle.userData.velocity.z * 0.5;
 
                             const distanceToMouse = particle.position.distanceTo(mousePoint);
                             const repulsionRadius = 2.0;
-                            
+
                             if (distanceToMouse < repulsionRadius) {
                                 const repulsionForce = (1 - (distanceToMouse / repulsionRadius)) * 0.1;
                                 const direction = new THREE.Vector3().subVectors(particle.position, mousePoint).normalize();
                                 particle.position.add(direction.multiplyScalar(repulsionForce));
                             }
 
-                            // Reset particle if it goes too far
-                            if (particle.position.z > camera.position.z + 5) {
-                                particle.position.z = -spread / 2;
-                                particle.userData.basePosition.x = (Math.random() - 0.5) * spread;
-                                particle.userData.basePosition.y = (Math.random() - 0.5) * spread;
-                                particle.position.x = particle.userData.basePosition.x;
-                                particle.position.y = particle.userData.basePosition.y;
+                            if (particle.position.y < -spread / 2) {
+                                particle.position.y = spread / 2;
+                                particle.position.x = (Math.random() - 0.5) * spread;
+                                particle.position.z = (Math.random() - 0.5) * spread;
+                                particle.userData.basePosition.copy(particle.position);
                             }
                         }
                     });
@@ -376,11 +376,12 @@ function MusicCard({ data }: { data?: Spotify }) {
                 {/* Status */}
                 <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 lg:mb-6">
                     {data.isPlaying && (
-                        <div className="flex items-center gap-0.5">
+                        <div className="flex items-center gap-0.5 h-4 md:h-5 lg:h-6">
                             {[...Array(8)].map((_, i) => (
-                                <div 
+                                <div
                                     key={i}
-                                    className={`w-0.5 h-2 bg-green-500 rounded-full md:w-1 md:h-3 lg:h-4 visualizer-bar-${i + 1}`}
+                                    className={`w-0.5 bg-green-500 rounded-full md:w-1 visualizer-bar-${i + 1}`}
+                                    style={{ height: '50%' }}
                                 />
                             ))}
                         </div>
