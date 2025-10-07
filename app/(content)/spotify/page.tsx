@@ -148,7 +148,6 @@ export default function SpotifyPage() {
 
                     const count = 400;
                     const spread = 30;
-                    const spread = 30;
 
                     for (let i = 0; i < count; i++) {
                         let particle: any;
