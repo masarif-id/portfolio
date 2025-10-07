@@ -86,7 +86,7 @@ export default function SpotifyPage() {
                     context.font = `${fontSize}px Arial`;
                     context.shadowColor = 'white';
                     context.shadowBlur = glowSize;
-                    context.fillStyle = isMainText ? '#1DB954' : 'white';
+                    context.fillStyle = 'white';
                     context.fillText(message, glowSize, fontSize + glowSize / 2);
                     
                     const texture = new THREE.CanvasTexture(canvas);
