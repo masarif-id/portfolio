@@ -134,7 +134,7 @@ export default function SpotifyPage() {
                     });
                     particles.length = 0;
 
-                    const baseWords = ['music', 'sound', 'rhythm', 'melody', 'harmony', 'beat', 'tune', 'vibe'];
+                    const baseWords = ['.', '.', '.', '.', '.', '.', '.', '.'];
                     let dynamicWords = [...baseWords];
 
                     // Add song title and artist if available
