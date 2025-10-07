@@ -31,12 +31,13 @@ export default function SpotifyPage() {
 
         let scene: any, camera: any, renderer: any, controls: any, animationId: number;
         let particles: any[] = [];
+        let THREE: any;
         const spread = 30;
 
         const initThreeJS = async () => {
             try {
                 // Dynamic import Three.js
-                const THREE = await import('three');
+                THREE = await import('three');
                 const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
 
                 // Scene setup
@@ -124,7 +125,7 @@ export default function SpotifyPage() {
                 }
 
                 // Create particles with dynamic content
-                function createParticles() {
+                function createParticles(currentData?: Spotify) {
                     // Clear existing particles
                     particles.forEach(particle => {
                         if (scene && particle) {
@@ -135,14 +136,14 @@ export default function SpotifyPage() {
 
                     const baseWords = ['music', 'sound', 'rhythm', 'melody', 'harmony', 'beat', 'tune', 'vibe'];
                     let dynamicWords = [...baseWords];
-                    
+
                     // Add song title and artist if available
-                    if (data?.title) {
-                        const titleWords = data.title.split(' ').filter(word => word.length > 2);
+                    if (currentData?.title) {
+                        const titleWords = currentData.title.split(' ').filter(word => word.length > 2);
                         dynamicWords = [...titleWords.slice(0, 3), ...baseWords];
                     }
-                    if (data?.artist) {
-                        const artistWords = data.artist.split(' ').filter(word => word.length > 2);
+                    if (currentData?.artist) {
+                        const artistWords = currentData.artist.split(' ').filter(word => word.length > 2);
                         dynamicWords = [...artistWords.slice(0, 2), ...dynamicWords];
                     }
 
@@ -158,9 +159,9 @@ export default function SpotifyPage() {
                         } else if (rand < 0.7) {
                             const word = dynamicWords[Math.floor(Math.random() * dynamicWords.length)];
                             particle = createTextSprite(word, false);
-                        } else if (rand < 0.85 && data?.title) {
+                        } else if (rand < 0.85 && currentData?.title) {
                             // Add main song title occasionally
-                            particle = createTextSprite(data.title.split(' ')[0] || 'Music', true);
+                            particle = createTextSprite(currentData.title.split(' ')[0] || 'Music', true);
                         } else {
                             particle = createDotSprite();
                             const randomScale = Math.random() * 0.25 + 0.1;
@@ -271,7 +272,8 @@ export default function SpotifyPage() {
                             renderer.dispose();
                         }
                     },
-                    recreateParticles: createParticles
+                    recreateParticles: createParticles,
+                    THREE: THREE
                 };
             } catch (error) {
                 console.error('Failed to initialize Three.js:', error);
@@ -294,7 +296,7 @@ export default function SpotifyPage() {
         if (isInitialized && sceneRef.current?.recreateParticles && data) {
             const timer = setTimeout(() => {
                 try {
-                    sceneRef.current.recreateParticles();
+                    sceneRef.current.recreateParticles(data);
                 } catch (error) {
                     console.error('Failed to recreate particles:', error);
                 }
@@ -346,11 +348,11 @@ function MusicCard({ data }: { data?: Spotify }) {
     if (!data) return <LoadingCard />;
 
     return (
-        <Card className="w-full max-w-sm bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl md:max-w-md lg:max-w-lg">
-            <div className="p-4 text-center md:p-6 lg:p-8">
+        <Card className="w-full max-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl sm:max-w-xs md:max-w-sm lg:max-w-md">
+            <div className="p-3 text-center sm:p-4 md:p-6 lg:p-8">
                 {/* Album Cover */}
                 {data.albumImageUrl && (
-                    <div className="w-24 h-24 mx-auto mb-3 rounded-lg overflow-hidden shadow-xl md:w-32 md:h-32 md:mb-4 md:rounded-xl lg:w-40 lg:h-40 lg:mb-6 lg:rounded-2xl">
+                    <div className="w-20 h-20 mx-auto mb-2 rounded-lg overflow-hidden shadow-xl sm:w-24 sm:h-24 sm:mb-3 md:w-32 md:h-32 md:mb-4 md:rounded-xl lg:w-40 lg:h-40 lg:mb-6 lg:rounded-2xl">
                         <img 
                             src={data.albumImageUrl} 
                             alt={data.album}
@@ -361,22 +363,22 @@ function MusicCard({ data }: { data?: Spotify }) {
                 )}
                 
                 {/* Track Info */}
-                <div className="space-y-1 mb-3 md:space-y-2 md:mb-4 lg:space-y-3 lg:mb-6">
-                    <h1 className="text-sm font-bold text-white line-clamp-2 md:text-lg lg:text-xl">
+                <div className="space-y-0.5 mb-2 sm:space-y-1 sm:mb-3 md:space-y-2 md:mb-4 lg:space-y-3 lg:mb-6">
+                    <h1 className="text-xs font-bold text-white line-clamp-2 sm:text-sm md:text-lg lg:text-xl">
                         {data.title}
                     </h1>
-                    <p className="text-xs text-gray-300 md:text-sm lg:text-base">
+                    <p className="text-[10px] text-gray-300 sm:text-xs md:text-sm lg:text-base">
                         {data.artist}
                     </p>
-                    <p className="text-xs text-gray-400 md:text-sm">
+                    <p className="text-[10px] text-gray-400 sm:text-xs md:text-sm">
                         {data.album}
                     </p>
                 </div>
 
                 {/* Status */}
-                <div className="flex items-center justify-center gap-2 mb-3 md:mb-4 lg:mb-6">
+                <div className="flex items-center justify-center gap-1.5 mb-2 sm:gap-2 sm:mb-3 md:mb-4 lg:mb-6">
                     {data.isPlaying && (
-                        <div className="flex items-center gap-0.5 h-4 md:h-5 lg:h-6">
+                        <div className="flex items-center gap-0.5 h-3 sm:h-4 md:h-5 lg:h-6">
                             {[...Array(8)].map((_, i) => (
                                 <div
                                     key={i}
@@ -386,7 +388,7 @@ function MusicCard({ data }: { data?: Spotify }) {
                             ))}
                         </div>
                     )}
-                    <p className="text-xs text-gray-400 md:text-sm">
+                    <p className="text-[10px] text-gray-400 sm:text-xs md:text-sm">
                         {data.isPlaying ? 'Now Playing' : 'Recently Played'}
                     </p>
                 </div>
@@ -396,11 +398,11 @@ function MusicCard({ data }: { data?: Spotify }) {
                     href={data.songUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition-all duration-300 hover:scale-105 text-xs md:gap-3 md:px-5 md:py-2.5 md:text-sm lg:px-6 lg:py-3 lg:text-base"
+                    className="group inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition-all duration-300 hover:scale-105 text-[10px] sm:gap-2 sm:px-4 sm:py-2 sm:text-xs md:gap-3 md:px-5 md:py-2.5 md:text-sm lg:px-6 lg:py-3 lg:text-base"
                 >
-                    <FaSpotify className="text-sm md:text-base" />
+                    <FaSpotify className="text-xs sm:text-sm md:text-base" />
                     Open in Spotify
-                    <FaArrowRight className="-rotate-45 transition-transform duration-300 group-hover:rotate-0 text-xs md:text-sm" />
+                    <FaArrowRight className="-rotate-45 transition-transform duration-300 group-hover:rotate-0 text-[8px] sm:text-xs md:text-sm" />
                 </a>
             </div>
         </Card>
@@ -409,15 +411,15 @@ function MusicCard({ data }: { data?: Spotify }) {
 
 function LoadingCard() {
     return (
-        <Card className="w-full max-w-sm bg-black/80 backdrop-blur-xl border border-white/20 md:max-w-md lg:max-w-lg">
-            <div className="p-4 text-center md:p-6 lg:p-8">
-                <div className="w-24 h-24 mx-auto mb-3 bg-gray-700 animate-pulse rounded-lg md:w-32 md:h-32 md:mb-4 md:rounded-xl lg:w-40 lg:h-40 lg:mb-6 lg:rounded-2xl" />
-                <div className="space-y-1 mb-3 md:space-y-2 md:mb-4 lg:space-y-3 lg:mb-6">
-                    <div className="h-4 bg-gray-700 animate-pulse rounded-md mx-auto w-3/4 md:h-5 lg:h-6" />
-                    <div className="h-3 bg-gray-700 animate-pulse rounded-md mx-auto w-1/2 md:h-4 lg:h-5" />
-                    <div className="h-3 bg-gray-700 animate-pulse rounded-md mx-auto w-2/3 md:h-4" />
+        <Card className="w-full max-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 sm:max-w-xs md:max-w-sm lg:max-w-md">
+            <div className="p-3 text-center sm:p-4 md:p-6 lg:p-8">
+                <div className="w-20 h-20 mx-auto mb-2 bg-gray-700 animate-pulse rounded-lg sm:w-24 sm:h-24 sm:mb-3 md:w-32 md:h-32 md:mb-4 md:rounded-xl lg:w-40 lg:h-40 lg:mb-6 lg:rounded-2xl" />
+                <div className="space-y-0.5 mb-2 sm:space-y-1 sm:mb-3 md:space-y-2 md:mb-4 lg:space-y-3 lg:mb-6">
+                    <div className="h-3 bg-gray-700 animate-pulse rounded-md mx-auto w-3/4 sm:h-4 md:h-5 lg:h-6" />
+                    <div className="h-2.5 bg-gray-700 animate-pulse rounded-md mx-auto w-1/2 sm:h-3 md:h-4 lg:h-5" />
+                    <div className="h-2.5 bg-gray-700 animate-pulse rounded-md mx-auto w-2/3 sm:h-3 md:h-4" />
                 </div>
-                <div className="h-8 bg-gray-700 animate-pulse rounded-full mx-auto w-32 md:h-9 md:w-36 lg:h-10 lg:w-40" />
+                <div className="h-7 bg-gray-700 animate-pulse rounded-full mx-auto w-28 sm:h-8 sm:w-32 md:h-9 md:w-36 lg:h-10 lg:w-40" />
             </div>
         </Card>
     );
@@ -428,11 +430,11 @@ function ErrorDisplay() {
         <div className="w-full h-screen bg-black flex items-center justify-center">
             <Card className="w-full max-w-sm bg-black/80 backdrop-blur-xl border border-red-500/30 md:max-w-md">
                 <div className="p-4 text-center md:p-6">
-                    <div className="text-red-500 mb-3 md:mb-4">
+                    <div className="text-red-500 mb-2 sm:mb-3 md:mb-4">
                         <FaX size="1.5rem" className="mx-auto md:text-3xl" />
                     </div>
-                    <h2 className="text-base font-bold text-white mb-2 md:text-lg">Failed to Load</h2>
-                    <p className="text-sm text-gray-400 mb-3 md:text-base md:mb-4">Unable to fetch Spotify data</p>
+                    <h2 className="text-sm font-bold text-white mb-1.5 sm:text-base sm:mb-2 md:text-lg">Failed to Load</h2>
+                    <p className="text-xs text-gray-400 mb-2 sm:text-sm sm:mb-3 md:text-base md:mb-4">Unable to fetch Spotify data</p>
                     <Anchor href="/" className="inline-flex text-sm md:text-base">
                         <FaArrowRight className="-rotate-45" />
                         Back to Home
