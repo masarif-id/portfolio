@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useState } from 'react';
 import { breakpoints } from './consts';
 
 function useBreakpoint() {
-    const [breakpoint, setBreakpoint] = useState<string>('');
+    const [breakpoint, setBreakpoint] = useState<string>('xxs');
 
     useEffect(() => {
         const handleResize = () => {
