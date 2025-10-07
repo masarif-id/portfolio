@@ -31,6 +31,7 @@ export default function SpotifyPage() {
 
         let scene: any, camera: any, renderer: any, controls: any, animationId: number;
         let particles: any[] = [];
+        const spread = 30;
 
         const initThreeJS = async () => {
             try {
@@ -147,7 +148,6 @@ export default function SpotifyPage() {
                     }
 
                     const count = 400;
-                    const spread = 30;
 
                     for (let i = 0; i < count; i++) {
                         let particle: any;
