@@ -4,7 +4,7 @@ import Card from '../../ui/card';
 
 export default function ProductLut() {
     return (
-        <Card className='relative flex h-full flex-col items-center justify-center' style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
+        <Card className='relative flex h-full flex-col items-center justify-center bg-pink-600 dark:bg-pink-700'>
             <div className='absolute bottom-3 left-3'>
                 <Anchor className='cancel-drag' href='/products/lut'>
                     <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />

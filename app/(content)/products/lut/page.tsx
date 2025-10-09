@@ -61,7 +61,7 @@ export default function LutPage() {
                 <Container className='py-16 text-center'>
                     <div className='mx-auto max-w-4xl'>
                         <div className='mb-8 flex justify-center'>
-                            <div className='rounded-full bg-gradient-to-r from-pink-500 to-red-600 p-6'>
+                            <div className='rounded-full bg-pink-600 dark:bg-pink-700 p-6'>
                                 <FaVideo size='4rem' className='text-white' />
                             </div>
                         </div>
@@ -77,12 +77,12 @@ export default function LutPage() {
                                 href='https://store.masarif.id/lut'
                                 target='_blank'
                                 rel='noopener noreferrer'
-                                className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-pink-500 to-red-600 text-white rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                                className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-pink-600 dark:bg-pink-700 text-white rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
                                 <FaDownload />
                                 Get LUTs Now
                                 <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                             </a>
-                            <button className='inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-full font-medium text-lg transition-all duration-300 hover:border-pink-500 dark:hover:border-pink-400'>
+                            <button className='inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-full font-medium text-lg transition-all duration-300 hover:border-pink-600 dark:hover:border-pink-600'>
                                 <FaPlay />
                                 Watch Demo
                             </button>
@@ -124,7 +124,7 @@ export default function LutPage() {
                         {lutPacks.map((pack, index) => (
                             <Card key={index} className='p-8 text-center hover:shadow-xl transition-shadow duration-300'>
                                 <div className='mb-6'>
-                                    <div className='w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-pink-500 to-red-600 flex items-center justify-center mb-4'>
+                                    <div className='w-16 h-16 mx-auto rounded-full bg-pink-600 dark:bg-pink-700 flex items-center justify-center mb-4'>
                                         <FaVideo className='text-white text-2xl' />
                                     </div>
                                     <h3 className='font-pixelify-sans text-xl mb-2'>{pack.name}</h3>
@@ -141,7 +141,7 @@ export default function LutPage() {
                                     href='https://store.masarif.id/lut'
                                     target='_blank'
                                     rel='noopener noreferrer'
-                                    className='group inline-flex items-center justify-center gap-3 w-full px-6 py-3 bg-gradient-to-r from-pink-500 to-red-600 text-white rounded-full font-medium transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                                    className='group inline-flex items-center justify-center gap-3 w-full px-6 py-3 bg-pink-600 dark:bg-pink-700 text-white rounded-full font-medium transition-all duration-300 hover:shadow-lg hover:scale-105'>
                                     Get This Pack
                                     <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                                 </a>
@@ -169,7 +169,7 @@ export default function LutPage() {
 
                 {/* CTA Section */}
                 <Container className='py-16'>
-                    <Card className='p-12 text-center bg-gradient-to-r from-pink-500 to-red-600 text-white'>
+                    <Card className='p-12 text-center bg-pink-600 dark:bg-pink-700 text-white'>
                         <h2 className='font-pixelify-sans text-3xl mb-4'>Ready to Create Cinematic Videos?</h2>
                         <p className='text-lg mb-8 opacity-90 max-w-2xl mx-auto'>
                             Join professional filmmakers and content creators who trust our LUTs for their projects. 

@@ -168,7 +168,7 @@ export default function SpotifyPage() {
                         dynamicWords = ['♪'];
                     }
 
-                    const count = 600;
+                    const count = 1000;
 
                     for (let i = 0; i < count; i++) {
                         let particle: any;
