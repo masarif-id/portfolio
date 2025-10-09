@@ -137,14 +137,18 @@ export default function SpotifyPage() {
                     const baseWords = ['music', 'sound', 'rhythm', 'melody', 'harmony', 'beat', 'tune', 'vibe'];
                     let dynamicWords = [...baseWords];
 
-                    // Add song title and artist if available
+                    // Add song title, artist, and album if available
                     if (currentData?.title) {
-                        const titleWords = currentData.title.split(' ').filter(word => word.length > 2);
-                        dynamicWords = [...titleWords.slice(0, 3), ...baseWords];
+                        const titleWords = currentData.title.split(' ').filter(word => word.length > 1);
+                        dynamicWords = [...titleWords, ...dynamicWords];
                     }
                     if (currentData?.artist) {
-                        const artistWords = currentData.artist.split(' ').filter(word => word.length > 2);
-                        dynamicWords = [...artistWords.slice(0, 2), ...dynamicWords];
+                        const artistWords = currentData.artist.split(' ').filter(word => word.length > 1);
+                        dynamicWords = [...artistWords, ...dynamicWords];
+                    }
+                    if (currentData?.album) {
+                        const albumWords = currentData.album.split(' ').filter(word => word.length > 1);
+                        dynamicWords = [...albumWords, ...dynamicWords];
                     }
 
                     const count = 400;
@@ -159,9 +163,6 @@ export default function SpotifyPage() {
                         } else if (rand < 0.7) {
                             const word = dynamicWords[Math.floor(Math.random() * dynamicWords.length)];
                             particle = createTextSprite(word, false);
-                        } else if (rand < 0.85 && currentData?.title) {
-                            // Add main song title occasionally
-                            particle = createTextSprite(currentData.title.split(' ')[0] || 'Music', true);
                         } else {
                             particle = createDotSprite();
                             const randomScale = Math.random() * 0.25 + 0.1;
