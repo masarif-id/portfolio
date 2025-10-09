@@ -98,29 +98,45 @@ export default function SpotifyPage() {
                     return sprite;
                 }
 
-                // Create dot sprite function
+                // Create dot sprite function with star effect
                 function createDotSprite() {
                     const canvas = document.createElement('canvas');
-                    canvas.width = 16;
-                    canvas.height = 16;
+                    canvas.width = 32;
+                    canvas.height = 32;
                     const context = canvas.getContext('2d')!;
-                    
-                    const gradient = context.createRadialGradient(8, 8, 0, 8, 8, 8);
+
+                    const centerX = 16;
+                    const centerY = 16;
+
+                    // Draw star glow
+                    const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, 16);
                     gradient.addColorStop(0, 'rgba(255,255,255,1)');
-                    gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
-                    gradient.addColorStop(1, 'rgba(255,255,255,0)');
-                    
+                    gradient.addColorStop(0.1, 'rgba(255,255,255,0.9)');
+                    gradient.addColorStop(0.3, 'rgba(255,255,255,0.5)');
+                    gradient.addColorStop(0.6, 'rgba(200,220,255,0.2)');
+                    gradient.addColorStop(1, 'rgba(150,180,255,0)');
+
                     context.fillStyle = gradient;
-                    context.fillRect(0, 0, 16, 16);
-                    
+                    context.fillRect(0, 0, 32, 32);
+
+                    // Draw cross sparkle
+                    context.strokeStyle = 'rgba(255,255,255,0.8)';
+                    context.lineWidth = 1.5;
+                    context.beginPath();
+                    context.moveTo(centerX, centerY - 8);
+                    context.lineTo(centerX, centerY + 8);
+                    context.moveTo(centerX - 8, centerY);
+                    context.lineTo(centerX + 8, centerY);
+                    context.stroke();
+
                     const texture = new THREE.CanvasTexture(canvas);
-                    const spriteMaterial = new THREE.SpriteMaterial({ 
-                        map: texture, 
-                        transparent: true, 
-                        blending: THREE.AdditiveBlending 
+                    const spriteMaterial = new THREE.SpriteMaterial({
+                        map: texture,
+                        transparent: true,
+                        blending: THREE.AdditiveBlending
                     });
                     const sprite = new THREE.Sprite(spriteMaterial);
-                    
+
                     return sprite;
                 }
 
@@ -134,37 +150,40 @@ export default function SpotifyPage() {
                     });
                     particles.length = 0;
 
-                    const baseWords = ['.', '.', '.', '.', '.', '.', '.', '.'];
-                    let dynamicWords = [...baseWords];
+                    let dynamicWords: string[] = [];
 
-                    // Add song title and artist if available
+                    // Add full song title, artist, and album as complete strings
                     if (currentData?.title) {
-                        const titleWords = currentData.title.split(' ').filter(word => word.length > 2);
-                        dynamicWords = [...titleWords.slice(0, 3), ...baseWords];
+                        dynamicWords.push(currentData.title);
                     }
                     if (currentData?.artist) {
-                        const artistWords = currentData.artist.split(' ').filter(word => word.length > 2);
-                        dynamicWords = [...artistWords.slice(0, 2), ...dynamicWords];
+                        dynamicWords.push(currentData.artist);
+                    }
+                    if (currentData?.album) {
+                        dynamicWords.push(currentData.album);
                     }
 
-                    const count = 400;
+                    // If no data, use empty array
+                    if (dynamicWords.length === 0) {
+                        dynamicWords = ['♪'];
+                    }
+
+                    const count = 1000;
 
                     for (let i = 0; i < count; i++) {
                         let particle: any;
                         const rand = Math.random();
 
-                        if (rand < 0.4) {
+                        if (rand < 0.25) {
                             particle = createDotSprite();
-                            particle.scale.set(0.1, 0.1, 1.0);
-                        } else if (rand < 0.7) {
+                            const starScale = Math.random() * 0.15 + 0.08;
+                            particle.scale.set(starScale, starScale, 1.0);
+                        } else if (rand < 0.75) {
                             const word = dynamicWords[Math.floor(Math.random() * dynamicWords.length)];
                             particle = createTextSprite(word, false);
-                        } else if (rand < 0.85 && currentData?.title) {
-                            // Add main song title occasionally
-                            particle = createTextSprite(currentData.title.split(' ')[0] || 'Music', true);
                         } else {
                             particle = createDotSprite();
-                            const randomScale = Math.random() * 0.25 + 0.1;
+                            const randomScale = Math.random() * 0.2 + 0.12;
                             particle.scale.set(randomScale, randomScale, 1.0);
                         }
                         
