@@ -2,7 +2,7 @@ import Anchor from '@/components/ui/anchor';
 import Container from '@/components/ui/container';
 import Card from '@/components/ui/card';
 import { FaX, FaCamera, FaArrowRight, FaDownload, FaStar, FaCheck, FaFlask } from 'react-icons/fa6';
-import Image from 'next/image';
+import Link from 'next/link';
 
 export const metadata = {
     title: 'Lightroom Preset — Products',
@@ -72,9 +72,11 @@ export default function PresetPage() {
                                 Get Presets Now
                                 <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                             </a>
-                            <button className='inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-full font-medium text-lg transition-all duration-300 hover:border-black dark:hover:border-white'>
+                            <Link
+                                href='/products/preset/samples'
+                                className='inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-full font-medium text-lg transition-all duration-300 hover:border-black dark:hover:border-white'>
                                 View Samples
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </Container>
