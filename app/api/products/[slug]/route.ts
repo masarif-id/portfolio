@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 type Params = Promise<{ slug: string }>;
 
@@ -36,6 +38,13 @@ export async function GET(request: Request, { params }: { params: Params }) {
 export async function PUT(request: Request, { params }: { params: Params }) {
     const { slug } = await params;
 
+    const cookieStore = await cookies();
+    const adminSession = cookieStore.get('admin_session');
+
+    if (!adminSession || adminSession.value !== 'authenticated') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const body = await request.json();
 
@@ -60,7 +69,8 @@ export async function PUT(request: Request, { params }: { params: Params }) {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/products?slug=eq.${slug}`, {
             method: 'PATCH',
             headers: {
-                apikey: SUPABASE_ANON_KEY,
+                apikey: SUPABASE_SERVICE_ROLE_KEY,
+                Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
                 'Content-Type': 'application/json',
                 Prefer: 'return=representation'
             },

@@ -49,19 +49,31 @@ export default function AdminProductsPage() {
         }
     }, []);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (password === 'admin123') {
-            setIsAuthenticated(true);
-            sessionStorage.setItem('admin_auth', 'true');
-            setAuthError('');
-            fetchProducts();
-        } else {
-            setAuthError('Password salah!');
+        setAuthError('');
+
+        try {
+            const response = await fetch('/api/admin/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            if (response.ok) {
+                setIsAuthenticated(true);
+                sessionStorage.setItem('admin_auth', 'true');
+                fetchProducts();
+            } else {
+                setAuthError('Password salah!');
+            }
+        } catch (error) {
+            setAuthError('Terjadi kesalahan. Coba lagi.');
         }
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await fetch('/api/admin/auth', { method: 'DELETE' });
         setIsAuthenticated(false);
         sessionStorage.removeItem('admin_auth');
         setPassword('');
