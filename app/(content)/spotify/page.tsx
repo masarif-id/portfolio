@@ -76,64 +76,89 @@ export default function SpotifyPage() {
                     const fontSize = isMainText ? 64 : 32;
                     const glowSize = isMainText ? 20 : 10;
                     context.font = `${fontSize}px Arial`;
-                    
+
                     const metrics = context.measureText(message);
                     const textWidth = metrics.width;
-                    
+
                     canvas.width = textWidth + glowSize * 2;
                     canvas.height = fontSize * 1.5 + glowSize * 2;
-                    
+
                     context.font = `${fontSize}px Arial`;
                     context.shadowColor = 'white';
                     context.shadowBlur = glowSize;
                     context.fillStyle = 'white';
                     context.fillText(message, glowSize, fontSize + glowSize / 2);
-                    
+
                     const texture = new THREE.CanvasTexture(canvas);
                     const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
                     const sprite = new THREE.Sprite(spriteMaterial);
-                    
+
                     const scale = isMainText ? canvas.width / 80 : canvas.width / 120;
                     sprite.scale.set(scale, canvas.height / (isMainText ? 80 : 120), 1.0);
                     return sprite;
                 }
 
-                // Create dot sprite function with star effect
-                function createDotSprite() {
+                // Create small star sprite
+                function createStarSprite() {
                     const canvas = document.createElement('canvas');
-                    canvas.width = 32;
-                    canvas.height = 32;
+                    canvas.width = 16;
+                    canvas.height = 16;
                     const context = canvas.getContext('2d')!;
 
-                    const centerX = 16;
-                    const centerY = 16;
+                    const centerX = 8;
+                    const centerY = 8;
 
-                    // Draw star glow
-                    const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, 16);
+                    const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, 8);
                     gradient.addColorStop(0, 'rgba(255,255,255,1)');
-                    gradient.addColorStop(0.1, 'rgba(255,255,255,0.9)');
-                    gradient.addColorStop(0.3, 'rgba(255,255,255,0.5)');
-                    gradient.addColorStop(0.6, 'rgba(200,220,255,0.2)');
-                    gradient.addColorStop(1, 'rgba(150,180,255,0)');
+                    gradient.addColorStop(0.4, 'rgba(255,255,255,0.6)');
+                    gradient.addColorStop(1, 'rgba(255,255,255,0)');
 
                     context.fillStyle = gradient;
-                    context.fillRect(0, 0, 32, 32);
-
-                    // Draw cross sparkle
-                    context.strokeStyle = 'rgba(255,255,255,0.8)';
-                    context.lineWidth = 1.5;
                     context.beginPath();
-                    context.moveTo(centerX, centerY - 8);
-                    context.lineTo(centerX, centerY + 8);
-                    context.moveTo(centerX - 8, centerY);
-                    context.lineTo(centerX + 8, centerY);
-                    context.stroke();
+                    context.arc(centerX, centerY, 8, 0, Math.PI * 2);
+                    context.fill();
 
                     const texture = new THREE.CanvasTexture(canvas);
                     const spriteMaterial = new THREE.SpriteMaterial({
                         map: texture,
                         transparent: true,
                         blending: THREE.AdditiveBlending
+                    });
+                    const sprite = new THREE.Sprite(spriteMaterial);
+
+                    return sprite;
+                }
+
+                // Create music note sprite
+                function createMusicNoteSprite() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 48;
+                    canvas.height = 48;
+                    const context = canvas.getContext('2d')!;
+
+                    context.fillStyle = 'white';
+                    context.shadowColor = 'white';
+                    context.shadowBlur = 10;
+
+                    // Draw music note
+                    context.beginPath();
+                    context.arc(16, 36, 6, 0, Math.PI * 2);
+                    context.fill();
+
+                    context.fillRect(22, 12, 3, 24);
+
+                    context.beginPath();
+                    context.moveTo(25, 12);
+                    context.quadraticCurveTo(35, 10, 35, 18);
+                    context.lineTo(35, 22);
+                    context.quadraticCurveTo(35, 16, 25, 18);
+                    context.closePath();
+                    context.fill();
+
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const spriteMaterial = new THREE.SpriteMaterial({
+                        map: texture,
+                        transparent: true
                     });
                     const sprite = new THREE.Sprite(spriteMaterial);
 
@@ -152,15 +177,14 @@ export default function SpotifyPage() {
 
                     let dynamicWords: string[] = [];
 
-                    // Add full song title, artist, and album as complete strings
+                    // Split title and artist into individual words
                     if (currentData?.title) {
-                        dynamicWords.push(currentData.title);
+                        const titleWords = currentData.title.split(' ').filter(word => word.trim() !== '');
+                        dynamicWords.push(...titleWords);
                     }
                     if (currentData?.artist) {
-                        dynamicWords.push(currentData.artist);
-                    }
-                    if (currentData?.album) {
-                        dynamicWords.push(currentData.album);
+                        const artistWords = currentData.artist.split(' ').filter(word => word.trim() !== '');
+                        dynamicWords.push(...artistWords);
                     }
 
                     // If no data, use empty array
@@ -174,24 +198,25 @@ export default function SpotifyPage() {
                         let particle: any;
                         const rand = Math.random();
 
-                        if (rand < 0.25) {
-                            particle = createDotSprite();
-                            const starScale = Math.random() * 0.15 + 0.08;
-                            particle.scale.set(starScale, starScale, 1.0);
-                        } else if (rand < 0.75) {
+                        // 50% text, 35% small stars, 15% music notes
+                        if (rand < 0.5) {
                             const word = dynamicWords[Math.floor(Math.random() * dynamicWords.length)];
                             particle = createTextSprite(word, false);
+                        } else if (rand < 0.85) {
+                            particle = createStarSprite();
+                            const starScale = Math.random() * 0.1 + 0.05;
+                            particle.scale.set(starScale, starScale, 1.0);
                         } else {
-                            particle = createDotSprite();
-                            const randomScale = Math.random() * 0.2 + 0.12;
-                            particle.scale.set(randomScale, randomScale, 1.0);
+                            particle = createMusicNoteSprite();
+                            const noteScale = Math.random() * 0.15 + 0.1;
+                            particle.scale.set(noteScale, noteScale, 1.0);
                         }
-                        
+
                         const x = (Math.random() - 0.5) * spread;
                         const y = (Math.random() - 0.5) * spread;
                         const z = (Math.random() - 0.5) * spread;
                         particle.position.set(x, y, z);
-                        
+
                         particle.userData = {
                             basePosition: new THREE.Vector3(x, y, z),
                             velocity: new THREE.Vector3(
@@ -199,7 +224,9 @@ export default function SpotifyPage() {
                                 -(Math.random() * 0.03 + 0.02),
                                 (Math.random() - 0.5) * 0.005
                             ),
-                            fallSpeed: Math.random() * 0.02 + 0.01
+                            fallSpeed: Math.random() * 0.02 + 0.01,
+                            twinkleSpeed: Math.random() * 0.02 + 0.01,
+                            twinklePhase: Math.random() * Math.PI * 2
                         };
 
                         scene.add(particle);
@@ -226,6 +253,15 @@ export default function SpotifyPage() {
                             particle.position.y += particle.userData.velocity.y;
                             particle.position.x += particle.userData.velocity.x * 0.5;
                             particle.position.z += particle.userData.velocity.z * 0.5;
+
+                            // Twinkle effect for stars
+                            if (particle.userData.twinkleSpeed) {
+                                particle.userData.twinklePhase += particle.userData.twinkleSpeed;
+                                const opacity = (Math.sin(particle.userData.twinklePhase) + 1) * 0.5;
+                                if (particle.material) {
+                                    particle.material.opacity = 0.3 + opacity * 0.7;
+                                }
+                            }
 
                             const distanceToMouse = particle.position.distanceTo(mousePoint);
                             const repulsionRadius = 2.0;

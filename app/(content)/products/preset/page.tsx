@@ -1,44 +1,38 @@
 import Anchor from '@/components/ui/anchor';
 import Container from '@/components/ui/container';
 import Card from '@/components/ui/card';
-import { FaX, FaCamera, FaArrowRight, FaDownload, FaStar, FaCheck } from 'react-icons/fa6';
-import Image from 'next/image';
+import { FaX, FaCamera, FaArrowRight, FaDownload, FaStar, FaCheck, FaFlask } from 'react-icons/fa6';
+import Link from 'next/link';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
     title: 'Lightroom Preset — Products',
-    description: 'Professional Lightroom presets by Arif for stunning photography edits. Transform your photos with cinematic color grading.',
+    description: 'Professional Lightroom presets by Arif for stunning photography edits. Transform your photos with cinematic color grading.'
 };
 
-export default function PresetPage() {
-    const features = [
-        'Professional color grading',
-        'Film-inspired tones',
-        'Easy one-click application',
-        'Compatible with Lightroom CC & Classic',
-        'Mobile & Desktop versions included',
-        'Lifetime updates'
-    ];
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-    const presetPacks = [
-        {
-            name: 'Cinematic Pack',
-            description: 'Film-inspired presets for dramatic storytelling',
-            price: '$29',
-            presets: 12
+async function getProductData() {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/products?slug=eq.preset&select=*`, {
+        headers: {
+            apikey: SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json'
         },
-        {
-            name: 'Portrait Pack',
-            description: 'Perfect skin tones and natural beauty enhancement',
-            price: '$24',
-            presets: 10
-        },
-        {
-            name: 'Landscape Pack',
-            description: 'Enhance nature photography with vibrant colors',
-            price: '$27',
-            presets: 15
-        }
-    ];
+        cache: 'no-store'
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch product data');
+    }
+
+    const data = await response.json();
+    return data[0];
+}
+
+export default async function PresetPage() {
+    const product = await getProductData();
 
     return (
         <>
@@ -49,39 +43,61 @@ export default function PresetPage() {
                 </Anchor>
             </header>
             <main>
-                {/* Hero Section */}
                 <Container className='py-16 text-center'>
                     <div className='mx-auto max-w-4xl'>
                         <div className='mb-8 flex justify-center'>
-                            <div className='rounded-full bg-purple-600 dark:bg-purple-700 p-6'>
-                                <FaCamera size='4rem' className='text-white' />
-                            </div>
+                            <FaCamera size='4rem' />
                         </div>
                         <h1 className='font-pixelify-sans text-5xl leading-tight mb-6 max-md:text-4xl'>
-                            Professional Lightroom Presets
+                            {product.title}
                         </h1>
                         <p className='text-xl leading-relaxed text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto'>
-                            Transform your photography with professionally crafted Lightroom presets. 
-                            Achieve cinematic color grading and stunning visual aesthetics with just one click.
+                            {product.subtitle}
                         </p>
                         <div className='flex flex-wrap justify-center gap-4'>
                             <a
-                                href='https://store.masarif.id/preset'
+                                href={product.store_url}
                                 target='_blank'
                                 rel='noopener noreferrer'
-                                className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-purple-600 dark:bg-purple-700 text-white rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                                className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
                                 <FaDownload />
                                 Get Presets Now
                                 <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                             </a>
-                            <button className='inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-full font-medium text-lg transition-all duration-300 hover:border-purple-600 dark:hover:border-purple-600'>
+                            <Link
+                                href='/products/preset/samples'
+                                className='inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-full font-medium text-lg transition-all duration-300 hover:border-black dark:hover:border-white'>
                                 View Samples
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </Container>
 
-                {/* Features Section */}
+                {product.extra_section_title && (
+                    <Container className='py-16'>
+                        <Card className='p-12 text-center'>
+                            <div className='mb-6 flex justify-center'>
+                                <FaFlask size='3rem' />
+                            </div>
+                            <h2 className='font-pixelify-sans text-3xl mb-4'>{product.extra_section_title}</h2>
+                            <p className='text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto'>
+                                {product.extra_section_description}
+                            </p>
+                            {product.secondary_url && (
+                                <a
+                                    href={product.secondary_url}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                                    <FaFlask />
+                                    {product.secondary_url_label}
+                                    <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
+                                </a>
+                            )}
+                        </Card>
+                    </Container>
+                )}
+
                 <Container className='py-16'>
                     <div className='text-center mb-12'>
                         <h2 className='font-pixelify-sans text-3xl mb-4'>What&apos;s Included</h2>
@@ -90,7 +106,7 @@ export default function PresetPage() {
                         </p>
                     </div>
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                        {features.map((feature, index) => (
+                        {product.features.map((feature: string, index: number) => (
                             <Card key={index} className='p-6'>
                                 <div className='flex items-center gap-4'>
                                     <div className='w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center'>
@@ -103,36 +119,38 @@ export default function PresetPage() {
                     </div>
                 </Container>
 
-                {/* Preset Packs Section */}
                 <Container className='py-16'>
                     <div className='text-center mb-12'>
                         <h2 className='font-pixelify-sans text-3xl mb-4'>Preset Collections</h2>
                         <p className='text-gray-600 dark:text-gray-300 max-w-2xl mx-auto'>
-                            Choose from our carefully curated preset collections, each designed for specific photography styles
+                            Choose from our carefully curated preset collections, each designed for specific
+                            photography styles
                         </p>
                     </div>
                     <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-                        {presetPacks.map((pack, index) => (
+                        {product.packages.map((pkg: any, index: number) => (
                             <Card key={index} className='p-8 text-center hover:shadow-xl transition-shadow duration-300'>
                                 <div className='mb-6'>
-                                    <div className='w-16 h-16 mx-auto rounded-full bg-purple-600 dark:bg-purple-700 flex items-center justify-center mb-4'>
-                                        <FaCamera className='text-white text-2xl' />
+                                    <div className='mb-4'>
+                                        <FaCamera className='text-2xl mx-auto' />
                                     </div>
-                                    <h3 className='font-pixelify-sans text-xl mb-2'>{pack.name}</h3>
-                                    <p className='text-gray-600 dark:text-gray-300 text-sm mb-4'>{pack.description}</p>
+                                    <h3 className='font-pixelify-sans text-xl mb-2'>{pkg.name}</h3>
+                                    <p className='text-gray-600 dark:text-gray-300 text-sm mb-4'>{pkg.description}</p>
                                     <div className='flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4'>
                                         <FaStar className='text-yellow-500' />
-                                        <span>{pack.presets} presets included</span>
+                                        <span>
+                                            {pkg.count} {pkg.countLabel} included
+                                        </span>
                                     </div>
                                 </div>
                                 <div className='mb-6'>
-                                    <span className='text-3xl font-bold text-purple-600 dark:text-purple-400'>{pack.price}</span>
+                                    <span className='text-3xl font-bold'>{pkg.price}</span>
                                 </div>
                                 <a
-                                    href='https://store.masarif.id/preset'
+                                    href={product.store_url}
                                     target='_blank'
                                     rel='noopener noreferrer'
-                                    className='group inline-flex items-center justify-center gap-3 w-full px-6 py-3 bg-purple-600 dark:bg-purple-700 text-white rounded-full font-medium transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                                    className='group inline-flex items-center justify-center gap-3 w-full px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium transition-all duration-300 hover:shadow-lg hover:scale-105'>
                                     Get This Pack
                                     <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                                 </a>
@@ -141,19 +159,15 @@ export default function PresetPage() {
                     </div>
                 </Container>
 
-                {/* CTA Section */}
                 <Container className='py-16'>
-                    <Card className='p-12 text-center bg-purple-600 dark:bg-purple-700 text-white'>
-                        <h2 className='font-pixelify-sans text-3xl mb-4'>Ready to Transform Your Photos?</h2>
-                        <p className='text-lg mb-8 opacity-90 max-w-2xl mx-auto'>
-                            Join thousands of photographers who have elevated their work with our professional presets. 
-                            Start creating stunning images today.
-                        </p>
+                    <Card className='p-12 text-center'>
+                        <h2 className='font-pixelify-sans text-3xl mb-4'>{product.cta_title}</h2>
+                        <p className='text-lg mb-8 opacity-90 max-w-2xl mx-auto'>{product.cta_description}</p>
                         <a
-                            href='https://store.masarif.id/preset'
+                            href={product.store_url}
                             target='_blank'
                             rel='noopener noreferrer'
-                            className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-purple-600 rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                            className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
                             <FaDownload />
                             Shop All Presets
                             <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
