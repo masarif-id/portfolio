@@ -15,20 +15,81 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 async function getProductData() {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/products?slug=eq.preset&select=*`, {
-        headers: {
-            apikey: SUPABASE_ANON_KEY,
-            'Content-Type': 'application/json'
-        },
-        cache: 'no-store'
-    });
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/products?slug=eq.preset&select=*`, {
+            headers: {
+                apikey: SUPABASE_ANON_KEY,
+                'Content-Type': 'application/json'
+            },
+            cache: 'no-store'
+        });
 
-    if (!response.ok) {
-        throw new Error('Failed to fetch product data');
+        if (!response.ok) {
+            throw new Error('Failed to fetch product data');
+        }
+
+        const data = await response.json();
+        const product = data[0];
+
+        if (!product) {
+            throw new Error('Product not found');
+        }
+
+        return {
+            ...product,
+            features: product.features || [],
+            packages: product.packages || [],
+            extra_section_items: product.extra_section_items || []
+        };
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        return {
+            slug: 'preset',
+            title: 'Professional Lightroom Presets',
+            subtitle: 'Transform your photography with professionally crafted Lightroom presets.',
+            hero_icon: 'FaCamera',
+            store_url: 'https://store.masarif.id/preset',
+            secondary_url: 'https://tes.masarif.id',
+            secondary_url_label: 'Test Presets Now',
+            features: [
+                'Professional color grading',
+                'Film-inspired tones',
+                'Easy one-click application',
+                'Compatible with Lightroom CC & Classic',
+                'Mobile & Desktop versions included',
+                'Lifetime updates'
+            ],
+            packages: [
+                {
+                    name: 'Cinematic Pack',
+                    description: 'Film-inspired presets for dramatic storytelling',
+                    price: '$29',
+                    count: 12,
+                    countLabel: 'presets'
+                },
+                {
+                    name: 'Portrait Pack',
+                    description: 'Perfect skin tones and natural beauty enhancement',
+                    price: '$24',
+                    count: 10,
+                    countLabel: 'presets'
+                },
+                {
+                    name: 'Landscape Pack',
+                    description: 'Enhanced nature photography with vibrant colors',
+                    price: '$27',
+                    count: 15,
+                    countLabel: 'presets'
+                }
+            ],
+            extra_section_title: 'Try Before You Buy',
+            extra_section_description: 'Not sure which preset is right for you? Test our presets first and see the magic yourself.',
+            extra_section_items: [],
+            cta_title: 'Ready to Transform Your Photos?',
+            cta_description: 'Join thousands of photographers who have elevated their work with our professional presets.',
+            meta_description: 'Professional Lightroom presets by Arif for stunning photography edits.'
+        };
     }
-
-    const data = await response.json();
-    return data[0];
 }
 
 export default async function PresetPage() {

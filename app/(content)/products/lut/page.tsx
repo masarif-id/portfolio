@@ -14,20 +14,88 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 async function getProductData() {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/products?slug=eq.lut&select=*`, {
-        headers: {
-            apikey: SUPABASE_ANON_KEY,
-            'Content-Type': 'application/json'
-        },
-        cache: 'no-store'
-    });
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/products?slug=eq.lut&select=*`, {
+            headers: {
+                apikey: SUPABASE_ANON_KEY,
+                'Content-Type': 'application/json'
+            },
+            cache: 'no-store'
+        });
 
-    if (!response.ok) {
-        throw new Error('Failed to fetch product data');
+        if (!response.ok) {
+            throw new Error('Failed to fetch product data');
+        }
+
+        const data = await response.json();
+        const product = data[0];
+
+        if (!product) {
+            throw new Error('Product not found');
+        }
+
+        return {
+            ...product,
+            features: product.features || [],
+            packages: product.packages || [],
+            extra_section_items: product.extra_section_items || []
+        };
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        return {
+            slug: 'lut',
+            title: 'Professional Video LUTs',
+            subtitle: 'Achieve cinematic color grading with our professional video LUTs.',
+            hero_icon: 'FaVideo',
+            store_url: 'https://store.masarif.id/lut',
+            secondary_url: null,
+            secondary_url_label: 'Watch Demo',
+            features: [
+                'Cinematic color grading',
+                'Hollywood-style looks',
+                'Compatible with all major editors',
+                'Premiere Pro, Final Cut, DaVinci Resolve',
+                'Log and Rec.709 versions',
+                'Instant download'
+            ],
+            packages: [
+                {
+                    name: 'Cinematic Pack',
+                    description: 'Hollywood-inspired LUTs for dramatic storytelling',
+                    price: '$39',
+                    count: 20,
+                    countLabel: 'LUTs'
+                },
+                {
+                    name: 'Vintage Pack',
+                    description: 'Retro and film-inspired color grading',
+                    price: '$34',
+                    count: 15,
+                    countLabel: 'LUTs'
+                },
+                {
+                    name: 'Modern Pack',
+                    description: 'Contemporary and clean color correction',
+                    price: '$37',
+                    count: 18,
+                    countLabel: 'LUTs'
+                }
+            ],
+            extra_section_title: 'Compatible Software',
+            extra_section_description: 'Our LUTs work seamlessly with all major video editing software',
+            extra_section_items: [
+                'Adobe Premiere Pro',
+                'Final Cut Pro X',
+                'DaVinci Resolve',
+                'Adobe After Effects',
+                'Avid Media Composer',
+                'Filmora'
+            ],
+            cta_title: 'Ready to Create Cinematic Videos?',
+            cta_description: 'Join professional filmmakers and content creators who trust our LUTs for their projects.',
+            meta_description: 'Professional video LUTs by Arif for cinematic color grading.'
+        };
     }
-
-    const data = await response.json();
-    return data[0];
 }
 
 export default async function LutPage() {
