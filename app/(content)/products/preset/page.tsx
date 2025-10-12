@@ -53,9 +53,7 @@ export default function PresetPage() {
                 <Container className='py-16 text-center'>
                     <div className='mx-auto max-w-4xl'>
                         <div className='mb-8 flex justify-center'>
-                            <div className='rounded-full bg-purple-600 dark:bg-purple-700 p-6'>
-                                <FaCamera size='4rem' className='text-white' />
-                            </div>
+                            <FaCamera size='4rem' />
                         </div>
                         <h1 className='font-pixelify-sans text-5xl leading-tight mb-6 max-md:text-4xl'>
                             Professional Lightroom Presets
@@ -69,12 +67,12 @@ export default function PresetPage() {
                                 href='https://store.masarif.id/preset'
                                 target='_blank'
                                 rel='noopener noreferrer'
-                                className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-purple-600 dark:bg-purple-700 text-white rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                                className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
                                 <FaDownload />
                                 Get Presets Now
                                 <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                             </a>
-                            <button className='inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-full font-medium text-lg transition-all duration-300 hover:border-purple-600 dark:hover:border-purple-600'>
+                            <button className='inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-full font-medium text-lg transition-all duration-300 hover:border-black dark:hover:border-white'>
                                 View Samples
                             </button>
                         </div>
@@ -115,8 +113,8 @@ export default function PresetPage() {
                         {presetPacks.map((pack, index) => (
                             <Card key={index} className='p-8 text-center hover:shadow-xl transition-shadow duration-300'>
                                 <div className='mb-6'>
-                                    <div className='w-16 h-16 mx-auto rounded-full bg-purple-600 dark:bg-purple-700 flex items-center justify-center mb-4'>
-                                        <FaCamera className='text-white text-2xl' />
+                                    <div className='mb-4'>
+                                        <FaCamera className='text-2xl mx-auto' />
                                     </div>
                                     <h3 className='font-pixelify-sans text-xl mb-2'>{pack.name}</h3>
                                     <p className='text-gray-600 dark:text-gray-300 text-sm mb-4'>{pack.description}</p>
@@ -126,13 +124,13 @@ export default function PresetPage() {
                                     </div>
                                 </div>
                                 <div className='mb-6'>
-                                    <span className='text-3xl font-bold text-purple-600 dark:text-purple-400'>{pack.price}</span>
+                                    <span className='text-3xl font-bold'>{pack.price}</span>
                                 </div>
                                 <a
                                     href='https://store.masarif.id/preset'
                                     target='_blank'
                                     rel='noopener noreferrer'
-                                    className='group inline-flex items-center justify-center gap-3 w-full px-6 py-3 bg-purple-600 dark:bg-purple-700 text-white rounded-full font-medium transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                                    className='group inline-flex items-center justify-center gap-3 w-full px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium transition-all duration-300 hover:shadow-lg hover:scale-105'>
                                     Get This Pack
                                     <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                                 </a>
@@ -143,7 +141,7 @@ export default function PresetPage() {
 
                 {/* CTA Section */}
                 <Container className='py-16'>
-                    <Card className='p-12 text-center bg-purple-600 dark:bg-purple-700 text-white'>
+                    <Card className='p-12 text-center'>
                         <h2 className='font-pixelify-sans text-3xl mb-4'>Ready to Transform Your Photos?</h2>
                         <p className='text-lg mb-8 opacity-90 max-w-2xl mx-auto'>
                             Join thousands of photographers who have elevated their work with our professional presets. 
@@ -153,7 +151,7 @@ export default function PresetPage() {
                             href='https://store.masarif.id/preset'
                             target='_blank'
                             rel='noopener noreferrer'
-                            className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-purple-600 rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                            className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
                             <FaDownload />
                             Shop All Presets
                             <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
