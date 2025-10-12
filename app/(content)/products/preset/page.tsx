@@ -1,7 +1,7 @@
 import Anchor from '@/components/ui/anchor';
 import Container from '@/components/ui/container';
 import Card from '@/components/ui/card';
-import { FaX, FaCamera, FaArrowRight, FaDownload, FaStar, FaCheck } from 'react-icons/fa6';
+import { FaX, FaCamera, FaArrowRight, FaDownload, FaStar, FaCheck, FaFlask } from 'react-icons/fa6';
 import Image from 'next/image';
 
 export const metadata = {
@@ -77,6 +77,29 @@ export default function PresetPage() {
                             </button>
                         </div>
                     </div>
+                </Container>
+
+                {/* Try Before You Buy Section */}
+                <Container className='py-16'>
+                    <Card className='p-12 text-center'>
+                        <div className='mb-6 flex justify-center'>
+                            <FaFlask size='3rem' />
+                        </div>
+                        <h2 className='font-pixelify-sans text-3xl mb-4'>Try Before You Buy</h2>
+                        <p className='text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto'>
+                            Not sure which preset is right for you? Test our presets first and see the magic yourself.
+                            Try them on your own photos before making a purchase.
+                        </p>
+                        <a
+                            href='https://tes.masarif.id'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='group inline-flex items-center justify-center gap-3 px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium text-lg transition-all duration-300 hover:shadow-lg hover:scale-105'>
+                            <FaFlask />
+                            Test Presets Now
+                            <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
+                        </a>
+                    </Card>
                 </Container>
 
                 {/* Features Section */}

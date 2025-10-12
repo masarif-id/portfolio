@@ -13,7 +13,7 @@ export default function Contact() {
             <div className='inline-flex flex-col items-center gap-6 lg:flex-row'>
                 <a
                     className='cancel-drag group inline-flex items-center justify-center gap-3 overflow-hidden rounded-full bg-white p-3 px-4 py-2 whitespace-nowrap ring-2 ring-gray-200/45 outline-hidden transition-all duration-300 focus-within:ring-4 focus-within:outline-hidden hover:ring-4 dark:text-black dark:ring-gray-200/30'
-                    href='mailto:inarif123@gmail.com'>
+                    href='mailto:admin@masarif.id'>
                     <FaArrowRight className='-rotate-45 transition-transform duration-300 group-hover:rotate-0' />
                     Contact Me
                 </a>
