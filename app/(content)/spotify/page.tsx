@@ -98,6 +98,73 @@ export default function SpotifyPage() {
                     return sprite;
                 }
 
+                // Create small star sprite
+                function createStarSprite() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 16;
+                    canvas.height = 16;
+                    const context = canvas.getContext('2d')!;
+
+                    const centerX = 8;
+                    const centerY = 8;
+
+                    const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, 8);
+                    gradient.addColorStop(0, 'rgba(255,255,255,1)');
+                    gradient.addColorStop(0.4, 'rgba(255,255,255,0.6)');
+                    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+
+                    context.fillStyle = gradient;
+                    context.beginPath();
+                    context.arc(centerX, centerY, 8, 0, Math.PI * 2);
+                    context.fill();
+
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const spriteMaterial = new THREE.SpriteMaterial({
+                        map: texture,
+                        transparent: true,
+                        blending: THREE.AdditiveBlending
+                    });
+                    const sprite = new THREE.Sprite(spriteMaterial);
+
+                    return sprite;
+                }
+
+                // Create music note sprite
+                function createMusicNoteSprite() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 48;
+                    canvas.height = 48;
+                    const context = canvas.getContext('2d')!;
+
+                    context.fillStyle = 'white';
+                    context.shadowColor = 'white';
+                    context.shadowBlur = 10;
+
+                    // Draw music note
+                    context.beginPath();
+                    context.arc(16, 36, 6, 0, Math.PI * 2);
+                    context.fill();
+
+                    context.fillRect(22, 12, 3, 24);
+
+                    context.beginPath();
+                    context.moveTo(25, 12);
+                    context.quadraticCurveTo(35, 10, 35, 18);
+                    context.lineTo(35, 22);
+                    context.quadraticCurveTo(35, 16, 25, 18);
+                    context.closePath();
+                    context.fill();
+
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const spriteMaterial = new THREE.SpriteMaterial({
+                        map: texture,
+                        transparent: true
+                    });
+                    const sprite = new THREE.Sprite(spriteMaterial);
+
+                    return sprite;
+                }
+
                 // Create particles with dynamic content
                 function createParticles(currentData?: Spotify) {
                     // Clear existing particles
@@ -128,9 +195,22 @@ export default function SpotifyPage() {
                     const count = 1000;
 
                     for (let i = 0; i < count; i++) {
-                        // Only create text sprites, no stars
-                        const word = dynamicWords[Math.floor(Math.random() * dynamicWords.length)];
-                        const particle = createTextSprite(word, false);
+                        let particle: any;
+                        const rand = Math.random();
+
+                        // 50% text, 35% small stars, 15% music notes
+                        if (rand < 0.5) {
+                            const word = dynamicWords[Math.floor(Math.random() * dynamicWords.length)];
+                            particle = createTextSprite(word, false);
+                        } else if (rand < 0.85) {
+                            particle = createStarSprite();
+                            const starScale = Math.random() * 0.1 + 0.05;
+                            particle.scale.set(starScale, starScale, 1.0);
+                        } else {
+                            particle = createMusicNoteSprite();
+                            const noteScale = Math.random() * 0.15 + 0.1;
+                            particle.scale.set(noteScale, noteScale, 1.0);
+                        }
 
                         const x = (Math.random() - 0.5) * spread;
                         const y = (Math.random() - 0.5) * spread;
@@ -144,7 +224,9 @@ export default function SpotifyPage() {
                                 -(Math.random() * 0.03 + 0.02),
                                 (Math.random() - 0.5) * 0.005
                             ),
-                            fallSpeed: Math.random() * 0.02 + 0.01
+                            fallSpeed: Math.random() * 0.02 + 0.01,
+                            twinkleSpeed: Math.random() * 0.02 + 0.01,
+                            twinklePhase: Math.random() * Math.PI * 2
                         };
 
                         scene.add(particle);
@@ -171,6 +253,15 @@ export default function SpotifyPage() {
                             particle.position.y += particle.userData.velocity.y;
                             particle.position.x += particle.userData.velocity.x * 0.5;
                             particle.position.z += particle.userData.velocity.z * 0.5;
+
+                            // Twinkle effect for stars
+                            if (particle.userData.twinkleSpeed) {
+                                particle.userData.twinklePhase += particle.userData.twinkleSpeed;
+                                const opacity = (Math.sin(particle.userData.twinklePhase) + 1) * 0.5;
+                                if (particle.material) {
+                                    particle.material.opacity = 0.3 + opacity * 0.7;
+                                }
+                            }
 
                             const distanceToMouse = particle.position.distanceTo(mousePoint);
                             const repulsionRadius = 2.0;
