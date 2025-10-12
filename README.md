@@ -1,6 +1,6 @@
 # Portfolio Website
 
-Personal portfolio website for Arif (@masarif.id) - A visual storyteller from Central Java, Indonesia. Features photography gallery, blog posts, Spotify integration, and product showcase. Built with Next.js 15.
+Personal portfolio website for Arif (@masarif.id) - A visual storyteller from Central Java, Indonesia. Features photography gallery, blog posts, Spotify integration, product showcase, and admin panel for content management. Built with Next.js 15.
 
 ## Features
 
@@ -8,8 +8,10 @@ Personal portfolio website for Arif (@masarif.id) - A visual storyteller from Ce
 - **Spotify Integration** - Real-time display of currently playing or recently played tracks
 - **Blog System** - MDX-powered blog with syntax highlighting and custom components
 - **Project Gallery** - Showcase photography work with optimized image loading
-- **Product Pages** - Dedicated pages for Lightroom presets and video LUTs
+- **Product Pages** - Dedicated pages for Lightroom presets and video LUTs with database-driven content
+- **Admin Panel** - Easy content management for products without touching code
 - **Interactive Map** - Location display using Mapbox GL
+- **Database Integration** - Supabase for product data persistence
 - **Theme Support** - Light and dark mode with smooth transitions
 - **SEO Optimized** - Complete meta tags, sitemap, and structured data
 - **Performance Focused** - Optimized images, fonts, and loading states
@@ -19,6 +21,7 @@ Personal portfolio website for Arif (@masarif.id) - A visual storyteller from Ce
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v4
+- **Database:** Supabase (PostgreSQL)
 - **Content:** MDX (next-mdx-remote)
 - **Grid System:** React Grid Layout
 - **Maps:** Mapbox GL + React Map GL
@@ -63,7 +66,7 @@ pnpm install
 
 ### 3. Environment Variables
 
-Create a `.env.local` file in the root directory and add the following environment variables:
+Create a `.env` file in the root directory and add the following environment variables:
 
 ```env
 # Spotify API Configuration
@@ -74,6 +77,13 @@ SPOTIFY_REFRESH_TOKEN=your_spotify_refresh_token
 # Mapbox Configuration
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_access_token
 
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Admin Panel Configuration
+ADMIN_PASSWORD=your_secure_admin_password
 ```
 
 #### Getting Spotify API Credentials:
@@ -90,6 +100,16 @@ NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_access_token
 2. Go to your [Account page](https://account.mapbox.com/)
 3. Create a new access token
 4. Copy the token to your environment variables
+
+#### Setting up Supabase:
+
+1. Create a new project at [Supabase](https://supabase.com)
+2. Go to Project Settings > API
+3. Copy your project URL and anon key
+4. Copy your service role key (keep this secret!)
+5. Go to SQL Editor and run the migrations from `supabase/migrations/` folder
+
+See [SUPABASE_SETUP.md](SUPABASE_SETUP.md) for detailed database setup instructions.
 
 ### 4. Run the Development Server
 
@@ -110,10 +130,14 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the r
 │   ├── (content)/               # Content pages group
 │   │   ├── posts/[slug]/        # Blog post pages
 │   │   ├── projects/[slug]/     # Project detail pages
-│   │   ├── products/            # Product pages
+│   │   ├── products/            # Product pages (LUT & Preset)
 │   │   └── spotify/             # Spotify integration page
+│   ├── admin/                   # Admin panel
+│   │   └── products/            # Product content manager
 │   ├── api/                     # API routes
-│   │   └── now-playing/         # Spotify API endpoint
+│   │   ├── admin/auth/          # Admin authentication
+│   │   ├── now-playing/         # Spotify API endpoint
+│   │   └── products/            # Product CRUD endpoints
 │   ├── globals.css              # Global styles
 │   ├── layout.tsx               # Root layout
 │   └── page.tsx                 # Homepage
@@ -130,6 +154,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the r
 ├── content/                     # MDX content
 │   ├── posts/                   # Blog posts
 │   └── projects/                # Project descriptions
+├── supabase/                    # Database migrations
+│   └── migrations/              # SQL migration files
 ├── public/                      # Static assets
 │   ├── images/                  # Images
 │   └── projects/                # Project images
@@ -141,6 +167,22 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the r
 ```
 
 ## Content Management
+
+### Managing Products (Admin Panel)
+
+Access the admin panel at `/admin/products` to manage product content without touching code:
+
+1. Navigate to `https://yourdomain.com/admin/products`
+2. Login with your admin password (set in `.env` as `ADMIN_PASSWORD`)
+3. Edit product details:
+   - Title, subtitle, and descriptions
+   - Features list
+   - Package pricing and details
+   - Extra sections and items
+   - CTA sections
+4. Click "Save Changes" to update
+
+All changes are stored in Supabase and reflected immediately on product pages.
 
 ### Adding Blog Posts
 
@@ -258,9 +300,40 @@ npm run start        # Start production server
 npm run lint         # Run ESLint
 ```
 
+## Admin Panel
+
+The admin panel allows you to manage product content without touching code.
+
+**Access:** `/admin/products`
+
+**Features:**
+- Edit product titles, subtitles, and descriptions
+- Manage features list
+- Update package pricing and details
+- Configure extra sections
+- Modify CTA sections
+- Real-time preview on product pages
+
+**Security:**
+- Password-protected access
+- Session-based authentication
+- Secure cookie management
+
+**Default Password:** Set via `ADMIN_PASSWORD` environment variable
+
 ## Troubleshooting
 
 ### Common Issues
+
+**Admin Panel Not Loading (ERR_TOO_MANY_REDIRECTS):**
+- Clear browser cookies
+- Check middleware configuration
+- Verify admin password is set in environment variables
+
+**Database Connection Issues:**
+- Verify Supabase URL and keys in `.env`
+- Check if migrations have been run in SQL Editor
+- Ensure RLS policies are properly configured
 
 **Spotify Integration Not Working:**
 - Verify environment variables are set correctly
@@ -282,8 +355,9 @@ npm run lint         # Run ESLint
 If you encounter issues:
 
 1. Check the [Next.js documentation](https://nextjs.org/docs)
-2. Review [Tailwind CSS documentation](https://tailwindcss.com/docs)
-3. Open an issue on GitHub
+2. Review [Supabase documentation](https://supabase.com/docs)
+3. Review [Tailwind CSS documentation](https://tailwindcss.com/docs)
+4. Open an issue on GitHub
 
 ## License
 
