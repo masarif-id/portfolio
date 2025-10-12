@@ -7,14 +7,14 @@ import Card from '../../ui/card';
 import Anchor from '../../ui/anchor';
 import { toKebabCase } from '@/utils/lib';
 
-import projectImage1 from '@/public/projects/satu.webp';
-import projectImage2 from '@/public/projects/dua.webp';
-import projectImage3 from '@/public/projects/tiga.webp';
-
 export default function Project() {
     const projectName = 'Gallery';
 
-    const projectImages = [projectImage1, projectImage2, projectImage3];
+    const projectImages = [
+        '/projects/gallery/images-1.webp',
+        '/projects/dua.webp',
+        '/projects/gallery/images-3.webp'
+    ];
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -50,7 +50,7 @@ export default function Project() {
                             ? 'opacity-100' 
                             : 'opacity-0'
                     }`}
-                    placeholder='blur'
+                    unoptimized
                     priority={index === 0}
                     draggable='false'
                 />

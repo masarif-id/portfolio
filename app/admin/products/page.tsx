@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Container from '@/components/ui/container';
 import Card from '@/components/ui/card';
-import { FaSave, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaSave, FaPlus, FaTrash, FaLock } from 'react-icons/fa';
 
 interface Product {
     id: string;
@@ -35,10 +35,49 @@ export default function AdminProductsPage() {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [password, setPassword] = useState('');
+    const [authError, setAuthError] = useState('');
 
     useEffect(() => {
-        fetchProducts();
+        const stored = sessionStorage.getItem('admin_auth');
+        if (stored === 'true') {
+            setIsAuthenticated(true);
+            fetchProducts();
+        } else {
+            setLoading(false);
+        }
     }, []);
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setAuthError('');
+
+        try {
+            const response = await fetch('/api/admin/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            if (response.ok) {
+                setIsAuthenticated(true);
+                sessionStorage.setItem('admin_auth', 'true');
+                fetchProducts();
+            } else {
+                setAuthError('Password salah!');
+            }
+        } catch (error) {
+            setAuthError('Terjadi kesalahan. Coba lagi.');
+        }
+    };
+
+    const handleLogout = async () => {
+        await fetch('/api/admin/auth', { method: 'DELETE' });
+        setIsAuthenticated(false);
+        sessionStorage.removeItem('admin_auth');
+        setPassword('');
+    };
 
     const fetchProducts = async () => {
         try {
@@ -130,6 +169,47 @@ export default function AdminProductsPage() {
         setSelectedProduct({ ...selectedProduct, packages: newPackages });
     };
 
+    if (!isAuthenticated) {
+        return (
+            <Container className='py-16'>
+                <div className='max-w-md mx-auto'>
+                    <Card className='p-8'>
+                        <div className='flex justify-center mb-6'>
+                            <div className='w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center'>
+                                <FaLock className='text-3xl text-white dark:text-black' />
+                            </div>
+                        </div>
+                        <h1 className='font-pixelify-sans text-3xl mb-2 text-center'>Admin Login</h1>
+                        <p className='text-center text-gray-600 dark:text-gray-300 mb-6'>
+                            Masukkan password untuk mengakses admin panel
+                        </p>
+                        <form onSubmit={handleLogin} className='space-y-4'>
+                            <div>
+                                <label className='block mb-2 font-medium'>Password</label>
+                                <input
+                                    type='password'
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder='Masukkan password'
+                                    className='w-full px-4 py-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white'
+                                    autoFocus
+                                />
+                            </div>
+                            {authError && (
+                                <p className='text-red-500 text-sm'>{authError}</p>
+                            )}
+                            <button
+                                type='submit'
+                                className='w-full px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg font-medium hover:opacity-80 transition-opacity'>
+                                Login
+                            </button>
+                        </form>
+                    </Card>
+                </div>
+            </Container>
+        );
+    }
+
     if (loading) {
         return (
             <Container className='py-16'>
@@ -140,11 +220,18 @@ export default function AdminProductsPage() {
 
     return (
         <Container className='py-16'>
-            <div className='mb-8'>
-                <h1 className='font-pixelify-sans text-4xl mb-4'>Product Content Manager</h1>
-                <p className='text-gray-600 dark:text-gray-300'>
-                    Edit your product pages without touching code
-                </p>
+            <div className='mb-8 flex items-center justify-between'>
+                <div>
+                    <h1 className='font-pixelify-sans text-4xl mb-4'>Product Content Manager</h1>
+                    <p className='text-gray-600 dark:text-gray-300'>
+                        Edit your product pages without touching code
+                    </p>
+                </div>
+                <button
+                    onClick={handleLogout}
+                    className='px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors'>
+                    Logout
+                </button>
             </div>
 
             <div className='flex gap-4 mb-8'>
