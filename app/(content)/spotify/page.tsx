@@ -110,12 +110,14 @@ export default function SpotifyPage() {
 
                     let dynamicWords: string[] = [];
 
-                    // Add only title and artist
+                    // Split title and artist into individual words
                     if (currentData?.title) {
-                        dynamicWords.push(currentData.title);
+                        const titleWords = currentData.title.split(' ').filter(word => word.trim() !== '');
+                        dynamicWords.push(...titleWords);
                     }
                     if (currentData?.artist) {
-                        dynamicWords.push(currentData.artist);
+                        const artistWords = currentData.artist.split(' ').filter(word => word.trim() !== '');
+                        dynamicWords.push(...artistWords);
                     }
 
                     // If no data, use empty array
