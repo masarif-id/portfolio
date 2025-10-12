@@ -1,8 +1,7 @@
 import Anchor from '@/components/ui/anchor';
 import Container from '@/components/ui/container';
-import Card from '@/components/ui/card';
+import ImageSlider from '@/components/ui/image-slider';
 import { FaX, FaArrowLeft } from 'react-icons/fa6';
-import Image from 'next/image';
 
 export const metadata = {
     title: 'Preset Samples — Lightroom Preset',
@@ -69,57 +68,28 @@ export default function PresetSamplesPage() {
             </header>
             <main>
                 <Container className='py-16'>
-                    <div className='text-center mb-12'>
+                    <div className='text-center mb-16'>
                         <h1 className='font-pixelify-sans text-5xl leading-tight mb-6 max-md:text-4xl'>
                             Preset Samples
                         </h1>
                         <p className='text-xl leading-relaxed text-gray-600 dark:text-gray-300 max-w-2xl mx-auto'>
-                            Explore our preset transformations. Compare the before and after to see the magic of professional color grading.
+                            Drag the slider to compare before and after. See the magic of professional color grading.
                         </p>
                     </div>
 
-                    <div className='grid grid-cols-1 gap-16'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
                         {samples.map((sample) => (
-                            <Card key={sample.id} className='p-8'>
-                                <div className='mb-6'>
-                                    <h2 className='font-pixelify-sans text-2xl mb-2'>{sample.name}</h2>
-                                    <p className='text-gray-600 dark:text-gray-300'>{sample.description}</p>
+                            <div key={sample.id} className='space-y-4'>
+                                <ImageSlider
+                                    beforeImage={sample.before}
+                                    afterImage={sample.after}
+                                    alt={sample.name}
+                                />
+                                <div className='text-center'>
+                                    <h2 className='font-pixelify-sans text-xl mb-1'>{sample.name}</h2>
+                                    <p className='text-sm text-gray-600 dark:text-gray-400'>{sample.description}</p>
                                 </div>
-                                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                                    <div>
-                                        <div className='mb-3'>
-                                            <span className='inline-block px-4 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-medium'>
-                                                Before
-                                            </span>
-                                        </div>
-                                        <div className='relative aspect-[4/3] rounded-lg overflow-hidden'>
-                                            <Image
-                                                src={sample.before}
-                                                alt={`${sample.name} - Before`}
-                                                fill
-                                                className='object-cover'
-                                                sizes='(max-width: 768px) 100vw, 50vw'
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className='mb-3'>
-                                            <span className='inline-block px-4 py-1 bg-black dark:bg-white text-white dark:text-black rounded-full text-sm font-medium'>
-                                                After
-                                            </span>
-                                        </div>
-                                        <div className='relative aspect-[4/3] rounded-lg overflow-hidden'>
-                                            <Image
-                                                src={sample.after}
-                                                alt={`${sample.name} - After`}
-                                                fill
-                                                className='object-cover'
-                                                sizes='(max-width: 768px) 100vw, 50vw'
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
+                            </div>
                         ))}
                     </div>
 
