@@ -1,14 +1,17 @@
+'use client';
+
 import Anchor from '@/components/ui/anchor';
 import Container from '@/components/ui/container';
 import ImageSlider from '@/components/ui/image-slider';
+import Lightbox from '@/components/ui/lightbox';
 import { FaX, FaArrowLeft } from 'react-icons/fa6';
-
-export const metadata = {
-    title: 'Preset Samples — Lightroom Preset',
-    description: 'See before and after examples of our professional Lightroom presets. Compare the transformations and find your perfect style.',
-};
+import { useState } from 'react';
+import Image from 'next/image';
 
 export default function PresetSamplesPage() {
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
+
     const samples = [
         {
             id: 1,
@@ -54,6 +57,23 @@ export default function PresetSamplesPage() {
         }
     ];
 
+    const galleryImages = [
+        '/projects/gallery/images-1.webp',
+        '/projects/gallery/images-2.webp',
+        '/projects/gallery/images-3.webp',
+        '/projects/gallery/images-4.webp',
+        '/projects/gallery/images-5.webp',
+        '/projects/gallery/images-1.webp',
+        '/projects/gallery/images-2.webp',
+        '/projects/gallery/images-3.webp',
+        '/projects/gallery/images-4.webp'
+    ];
+
+    const handleImageClick = (index: number) => {
+        setLightboxIndex(index);
+        setLightboxOpen(true);
+    };
+
     return (
         <>
             <header className='flex items-center justify-between pt-10 px-6'>
@@ -93,7 +113,32 @@ export default function PresetSamplesPage() {
                         ))}
                     </div>
 
-                    <div className='text-center mt-16'>
+                </Container>
+
+                <div className='mt-24 mb-16'>
+                    <Container className='mb-8'>
+                        <h2 className='font-pixelify-sans text-3xl text-center'>More Examples</h2>
+                    </Container>
+                    <div className='grid grid-cols-3 gap-0'>
+                        {galleryImages.map((image, index) => (
+                            <button
+                                key={index}
+                                onClick={() => handleImageClick(index)}
+                                className='relative aspect-square overflow-hidden cursor-pointer group'>
+                                <Image
+                                    src={image}
+                                    alt={`Gallery image ${index + 1}`}
+                                    fill
+                                    className='object-cover transition-transform duration-300 group-hover:scale-110'
+                                    sizes='33vw'
+                                />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <Container className='pb-16'>
+                    <div className='text-center'>
                         <p className='text-lg text-gray-600 dark:text-gray-300 mb-6'>
                             Ready to transform your photos with these presets?
                         </p>
@@ -116,6 +161,14 @@ export default function PresetSamplesPage() {
                     </div>
                 </Container>
             </main>
+
+            {lightboxOpen && (
+                <Lightbox
+                    images={galleryImages}
+                    initialIndex={lightboxIndex}
+                    onClose={() => setLightboxOpen(false)}
+                />
+            )}
         </>
     );
 }

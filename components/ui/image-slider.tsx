@@ -36,7 +36,7 @@ export default function ImageSlider({ beforeImage, afterImage, alt }: ImageSlide
 
     return (
         <div
-            className='relative w-full aspect-[4/3] select-none overflow-hidden rounded-lg'
+            className='relative w-full aspect-[3/4] select-none overflow-hidden rounded-lg'
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
