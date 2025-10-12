@@ -3,6 +3,13 @@ import Container from '@/components/ui/container';
 import Card from '@/components/ui/card';
 import { FaX, FaVideo, FaArrowRight, FaDownload, FaStar, FaCheck, FaPlay } from 'react-icons/fa6';
 
+export const dynamic = 'force-dynamic';
+
+export const metadata = {
+    title: 'Video LUTs — Products',
+    description: 'Professional video LUTs by Arif for cinematic color grading. Transform your videos with Hollywood-style color correction.'
+};
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
@@ -12,7 +19,7 @@ async function getProductData() {
             apikey: SUPABASE_ANON_KEY,
             'Content-Type': 'application/json'
         },
-        next: { revalidate: 60 }
+        cache: 'no-store'
     });
 
     if (!response.ok) {
@@ -21,15 +28,6 @@ async function getProductData() {
 
     const data = await response.json();
     return data[0];
-}
-
-export async function generateMetadata() {
-    const product = await getProductData();
-
-    return {
-        title: `${product.title} — Products`,
-        description: product.meta_description
-    };
 }
 
 export default async function LutPage() {
